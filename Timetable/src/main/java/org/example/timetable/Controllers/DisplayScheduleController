@@ -1,0 +1,48 @@
+package org.example.timetable.Controllers;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
+
+public class DisplayScheduleController {
+
+    @FXML
+    private GridPane scheduleGrid; 
+
+    @FXML
+    private Button backButton; 
+
+    //9:00 to 18:00
+    private final String[] timeSlots = {
+            "09:00 - 10:00", "10:00 - 11:00", "11:00 - 12:00", "12:00 - 13:00",
+            "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00", "17:00 - 18:00"
+    };
+
+    @FXML
+    public void initialize() {
+        // time column - first column
+        for (int i = 0; i < timeSlots.length; i++) {
+            Label timeLabel = new Label(timeSlots[i]);
+            timeLabel.setStyle("-fx-font-size: 14px; -fx-alignment: center;");
+            scheduleGrid.add(timeLabel, 0, i + 1); // Column 0, Row i+1
+        }
+
+        // timetable grids
+        for (int row = 1; row <= timeSlots.length; row++) { // Start from row 1
+            for (int col = 1; col <= 5; col++) { // Monday to Friday 
+                Label emptyCell = new Label("");
+                emptyCell.setMinSize(150, 40); //size logic  is easier to implement in java than fxml
+                emptyCell.setStyle("-fx-border-color: black; -fx-background-color: white;");
+                scheduleGrid.add(emptyCell, col, row);
+            }
+        }
+    }
+
+    @FXML
+    private void handleBackAction() {
+        //Stage stage = (Stage) backButton.getScene().getWindow();----->figure this out
+        BaseController.switchScene((Stage) backButton.getScene().getWindow(), "front.fxml");
+    }
+}
