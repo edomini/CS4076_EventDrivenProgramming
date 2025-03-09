@@ -248,7 +248,7 @@ public class DisplayScheduleController {
 
             //send info to server
             String message = "IMPORT," + formattedData;
-            System.out.println("\nmessage sent: \n" + message);
+            System.out.println("\nmessage sent: " + message);
 
             Task<String> task = new Task<>() {
                 @Override
