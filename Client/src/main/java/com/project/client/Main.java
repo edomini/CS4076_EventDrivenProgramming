@@ -19,7 +19,7 @@ public class Main extends Application {
 
         Scene scene = new Scene(root, 450, 550);
 
-        //stage.setTitle("Login Page"); Instead of the name just use an image of miffy at the top of the page .
+      
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.setFullScreen(true);
