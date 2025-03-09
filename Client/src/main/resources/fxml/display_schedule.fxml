@@ -49,17 +49,6 @@
             <GridPane fx:id="scheduleGrid" hgap="10" vgap="10"
                       style="-fx-background-color: #FCECEC; -fx-padding: 20; -fx-border-radius: 10; -fx-background-radius: 10;"
                       alignment="CENTER">
-
-                <!-- Time Header -->
-                <Label text="Time" GridPane.rowIndex="0" GridPane.columnIndex="0"
-                       style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-
-                <!-- Day Headers -->
-                <Label text="Monday" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-                <Label text="Tuesday" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-                <Label text="Wednesday" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
-                <Label text="Thursday" GridPane.rowIndex="0" GridPane.columnIndex="4"/>
-                <Label text="Friday" GridPane.rowIndex="0" GridPane.columnIndex="5"/>
             </GridPane>
         </VBox>
 
