@@ -11,16 +11,19 @@ import java.io.IOException;
 public class AddLectureController {
 
     @FXML
-    private ComboBox<String> dateComboBox; // Date
+    private ComboBox<String> dateComboBox;
 
     @FXML
-    private ComboBox<String> timeComboBox; // Time
+    private ComboBox<String> timeComboBox;
 
     @FXML
-    private TextField moduleCodeField; //Module
+    private TextField addModuleCodeField;
 
     @FXML
-    private Button cancelButton;//  Cncel
+    private TextField addRoomField;
+
+    @FXML
+    private Button cancelButton;
 
     @FXML
     private Button submitButton;// Submit ---->not done yet
@@ -37,11 +40,11 @@ public class AddLectureController {
     private void handleCancel() {
 
         try {
-            // Load the front page FXML file
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/front.fxml"));//cancel ---> front
             Pane root = loader.load();
 
-            // new scene with the front layout
+
             Scene scene = new Scene(root);
 
             // current ---> set scene to front
@@ -54,23 +57,41 @@ public class AddLectureController {
     }
 
     @FXML
-    private void handleSubmit() throws IOException { // not done yet
+    private void handleSubmit() throws IOException {
+
+        try {
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/display_schedule.fxml"));//submit ---> schedule
+            Pane root = loader.load();
+
+
+            Scene scene = new Scene(root);
+
+            // current ---> set scene to front
+            Stage stage = (Stage) submitButton.getScene().getWindow();
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         String selectedDay = dateComboBox.getValue();
         String selectedTime = timeComboBox.getValue();
-        String moduleCode = moduleCodeField.getText().trim();
+        String moduleCode = addModuleCodeField.getText().trim();
+        String roomFieldText = addRoomField.getText().trim();
 
 
-        if (selectedDay == null || selectedTime == null || moduleCode.isEmpty()) {
-            showAlert("Invalid Input", "Please enter valid day, time, and module code.");
+        if (selectedDay == null || selectedTime == null || moduleCode.isEmpty() || roomFieldText.isEmpty()) {
+            showAlert("Invalid Input", "Please enter valid day, time, module code and room number .");
             return;
         }
 
 
-        System.out.println("Lecture Added: " + "day:" + selectedDay + " " + "time:" + selectedTime + " " + "module code: "+ moduleCode);
+        System.out.println("Lecture Added: " + "day:" + selectedDay + " " + "time:" + selectedTime + " " + "module code: "+ moduleCode + " " +"room number: "+ roomFieldText);
 
 
     }
+
 
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);

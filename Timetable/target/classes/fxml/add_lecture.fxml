@@ -36,10 +36,10 @@
         <ComboBox fx:id="timeComboBox" promptText="Select Time" style="-fx-font-size: 14px; -fx-padding: 5px; -fx-background-color: #D9D9D9; -fx-background-radius: 95px;" maxWidth="160"/>
 
         <!-- ModuleCode -->
-        <TextField fx:id="moduleCodeField" promptText="Enter Module Code" style="-fx-font-size: 14px; -fx-padding: 5px; -fx-background-color: #D9D9D9; -fx-background-radius: 95px;" maxWidth="160"/>
+        <TextField fx:id="addModuleCodeField" promptText="Enter Module Code" style="-fx-font-size: 14px; -fx-padding: 5px; -fx-background-color: #D9D9D9; -fx-background-radius: 95px;" maxWidth="160"/>
 
         <!-- Room(Number)  -->
-        <TextField fx:id="roomField" promptText="Enter Room Number" style="-fx-font-size: 14px; -fx-padding: 5px; -fx-background-color: #D9D9D9; -fx-background-radius: 95px;" maxWidth="160"/>
+        <TextField fx:id="addRoomField" promptText="Enter Room Number" style="-fx-font-size: 14px; -fx-padding: 5px; -fx-background-color: #D9D9D9; -fx-background-radius: 95px;" maxWidth="160"/>
 
         <!-- Submit & Cancel -->
         <HBox spacing="30.0" alignment="CENTER">

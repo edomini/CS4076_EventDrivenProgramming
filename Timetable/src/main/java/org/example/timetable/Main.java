@@ -6,11 +6,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import static javafx.application.Application.launch;
+
 public class Main extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -18,14 +17,18 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/login.fxml"));
 
 
-        Scene scene = new Scene(root, 450, 550);
+        Scene scene = new Scene(root, 550, 650);
 
 
         //stage.setTitle("Login Page"); Instead of the name just use an image of miffy at the top of the page .
         stage.setScene(scene);
         stage.setMaximized(true);
-        stage.setFullScreen(true);
-        stage.setFullScreenExitHint("");
+        //stage.setFullScreen(true);
+        //stage.setFullScreenExitHint("");
         stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

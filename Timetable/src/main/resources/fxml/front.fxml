@@ -32,7 +32,7 @@
                        -fx-padding: 5px; -fx-background-radius: 95px;"
                 maxWidth="160" prefHeight="50"/>
 
-        <!--other  -->
+        <!--other -->
         <Button fx:id="otherButton" text="Other" onAction="#handleOther"
                 style="-fx-font-size: 14px;  -fx-background-color: #D9D9D9; -fx-text-fill: black;
                        -fx-padding: 5px; -fx-background-radius: 95px;"

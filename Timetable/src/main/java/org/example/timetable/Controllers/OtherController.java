@@ -10,6 +10,8 @@ import java.io.IOException;
 
 public class OtherController {
 
+    @FXML
+    private Button exportButton;
 
     @FXML
     private Button backButton;
@@ -44,3 +46,4 @@ public class OtherController {
         }
     }
 }
+
