@@ -189,7 +189,7 @@ public class Schedule_Server {
                                     }
 
                                 } else {
-                                    throw new IncorrectActionException("Module limit exceeded.Max 5 modules per course.");
+                                    throw new IncorrectActionException("Module limit exceeded. Max 5 modules per course.");
                                 }
                             } else {
                                 // add lecture to schedule
