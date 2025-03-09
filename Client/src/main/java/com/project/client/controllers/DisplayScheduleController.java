@@ -48,11 +48,25 @@ public class DisplayScheduleController {
 
     @FXML
     public void initialize() {
+        // 'Time' title label (0th col, 0th row)
+        Label timeTitle = new Label("Time");
+        timeTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        scheduleGrid.add(timeTitle, 0, 0);
+        GridPane.setHalignment(timeTitle, HPos.CENTER); //center it over the time labels
+        
         // time column (first column)
         for (int i = 0; i < timeSlots.length; i++) {
             Label timeLabel = new Label(timeSlots[i]);
             timeLabel.setStyle("-fx-font-size: 14px; -fx-alignment: center;");
-            scheduleGrid.add(timeLabel, 0, i + 1); // Column 0, Row i+1
+            scheduleGrid.add(timeLabel, 0, i + 1); // column 0, row i+1
+        }
+        
+        // days row (first row)
+        for (int j = 1; j <= days.size(); j++){
+            Label dayLabel = new Label(days.get(j - 1));
+            dayLabel.setStyle("-fx-font-size: 16px;");
+            scheduleGrid.add(dayLabel, j, 0); // column j, row 0
+            GridPane.setHalignment(dayLabel, HPos.CENTER); // center it over the schedule cells
         }
 
         //add empty cells to each cell of grid pane
