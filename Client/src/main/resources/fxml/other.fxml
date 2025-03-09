@@ -21,6 +21,7 @@
 
         <!-- Back Button -->
         <Button fx:id="backButton" text="Back" onAction="#handleBack"
-                style="-fx-font-size: 14px; -fx-padding: 5px; -fx-background-radius: 95px;" prefWidth="140" prefHeight="50"/>
+                style="-fx-font-size: 14px; -fx-background-color: #D9D9D9; -fx-text-fill: black; 
+                    -fx-padding: 5px; -fx-background-radius: 95px;" prefWidth="140" prefHeight="50"/>
     </VBox>
 </StackPane>
