@@ -231,9 +231,9 @@ public class Schedule_Server {
                     System.out.println("message sent: " + response);
 
                 } catch (IncorrectActionException ex) {
-                    System.out.println("Error: " + ex.getMessage());
+                    System.out.println("IncorrectActionException: " + ex.getMessage());
                     //send this error to the client
-                    out.println("Error: " + ex.getMessage());
+                    out.println("IncorrectActionException: " + ex.getMessage());
                 } finally {
                     System.out.println("\nClosing connection...\n");
                     try {
