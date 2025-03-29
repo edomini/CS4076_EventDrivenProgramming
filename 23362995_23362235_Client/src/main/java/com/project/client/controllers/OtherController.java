@@ -21,6 +21,9 @@ public class OtherController {
     private Button stopButton;
 
     @FXML
+    private Button otherButton;
+
+    @FXML
     private void handleStop() {
         String message = "STOP";
         System.out.println("\nmessage sent: " + message);
@@ -48,9 +51,34 @@ public class OtherController {
             });
         });
 
-        task.setOnFailed(event -> {
-            Platform.runLater(() -> TCP_Client.showAlert("Error", "Failed to connect to server."));
+        task.setOnFailed(event -> Platform.runLater(() -> TCP_Client.showAlert("Error", "Failed to connect to server.")));
+
+        // start the background thread
+        new Thread(task).start();
+    }
+
+    @FXML
+    private void handleOther(){
+        String message = "OTHER";
+        System.out.println("\nmessage sent: " + message);
+
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() {
+                return TCP_Client.sendRequest(message); // run in background thread
+            }
+        };
+
+        // when task is completed, process server response
+        task.setOnSucceeded(event -> {
+            String[] response = task.getValue().split(":");
+            System.out.println("message received: " + response[1].trim());
+
+            // display response
+            Platform.runLater(() -> TCP_Client.showAlert(response[0], response[1].trim()));
         });
+
+        task.setOnFailed(event -> Platform.runLater(() -> TCP_Client.showAlert("Error", "Failed to connect to server.")));
 
         // start the background thread
         new Thread(task).start();

@@ -15,6 +15,10 @@
             <DropShadow color="rgba(0, 0, 0, 0.3)" radius="5" spread="0.05" offsetX="0" offsetY="2"/>
         </effect>
 
+        <!-- Other Button -->
+        <Button fx:id="otherButton" text="Other" onAction="#handleOther"
+                style="-fx-font-size: 14px; -fx-padding: 5px; -fx-background-radius: 95px;" prefWidth="140" prefHeight="50"/>
+
         <!-- Stop Program -->
         <Button fx:id="stopButton" text="Stop" onAction="#handleStop"
                 style="-fx-font-size: 14px; -fx-padding: 5px; -fx-background-radius: 95px;" prefWidth="140" prefHeight="50"/>

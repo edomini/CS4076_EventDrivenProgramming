@@ -223,7 +223,7 @@ public class Schedule_Server {
                         response = "TERMINATE: Closing program...";
                         clientOK = false; //exit the loop and go to finally block
                         //other (disallowed) actions
-                    } else { // if (message.contains("OTHER"))
+                    } else if (message.contains("OTHER")) {
                         throw new IncorrectActionException("Apologies, Amelia and Emily don't provide this service.");
                     }
 
