@@ -1,5 +1,6 @@
 module com.project.client {
     requires javafx.controls;
+    requires transitive javafx.graphics;
     requires javafx.fxml;
     requires javafx.media;
 
