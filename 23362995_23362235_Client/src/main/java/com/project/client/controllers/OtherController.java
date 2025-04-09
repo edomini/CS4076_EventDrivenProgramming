@@ -8,7 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
-import com.project.client.TCP_Client;
+import com.project.client.Client;
 
 import java.io.IOException;
 
@@ -31,7 +31,7 @@ public class OtherController {
         Task<String> task = new Task<>() {
             @Override
             protected String call() {
-                return TCP_Client.sendRequest(message); // run in background thread
+                return Client.sendRequest(message); // run in background thread
             }
         };
 
@@ -43,7 +43,7 @@ public class OtherController {
             // display response
             Platform.runLater(() -> {
                 // show the alert and wait until the user dismisses it
-                TCP_Client.showAlert(response[0], response[1].trim());
+                Client.showAlert(response[0], response[1].trim());
                 //stop the music
                 BackgroundMusicController.getInstance().stop();
                 // then close the program successfully
@@ -51,7 +51,7 @@ public class OtherController {
             });
         });
 
-        task.setOnFailed(event -> Platform.runLater(() -> TCP_Client.showAlert("Error", "Failed to connect to server.")));
+        task.setOnFailed(event -> Platform.runLater(() -> Client.showAlert("Error", "Failed to connect to server.")));
 
         // start the background thread
         new Thread(task).start();
@@ -65,7 +65,7 @@ public class OtherController {
         Task<String> task = new Task<>() {
             @Override
             protected String call() {
-                return TCP_Client.sendRequest(message); // run in background thread
+                return Client.sendRequest(message); // run in background thread
             }
         };
 
@@ -75,10 +75,10 @@ public class OtherController {
             System.out.println("message received: " + response[1].trim());
 
             // display response
-            Platform.runLater(() -> TCP_Client.showAlert(response[0], response[1].trim()));
+            Platform.runLater(() -> Client.showAlert(response[0], response[1].trim()));
         });
 
-        task.setOnFailed(event -> Platform.runLater(() -> TCP_Client.showAlert("Error", "Failed to connect to server.")));
+        task.setOnFailed(event -> Platform.runLater(() -> Client.showAlert("Error", "Failed to connect to server.")));
 
         // start the background thread
         new Thread(task).start();

@@ -12,7 +12,7 @@ import javafx.application.Platform;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import com.project.client.TCP_Client;
+import com.project.client.Client;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -80,7 +80,7 @@ public class DisplayScheduleController {
         new Thread(() -> {
             //send request to server
             System.out.println("\nmessage sent: DISPLAY");
-            String response = TCP_Client.sendRequest("DISPLAY");
+            String response = Client.sendRequest("DISPLAY");
 
             //print server response
             if (response == null || response.isEmpty() || response.equals("Schedule empty.")){
@@ -125,7 +125,7 @@ public class DisplayScheduleController {
                     GridPane.setHalignment(moduleLabel, HPos.CENTER);
                 } else {
                     System.out.println("Positioning error for schedule: position [" + row + "," + col + "]");
-                    TCP_Client.showAlert("Error", "Positioning error for schedule: position [" + row + "," + col + "]");
+                    Client.showAlert("Error", "Positioning error for schedule: position [" + row + "," + col + "]");
                 }
             }
         }
@@ -163,7 +163,7 @@ public class DisplayScheduleController {
         Task<String> task = new Task<>() {
             @Override
             protected String call() {
-                return TCP_Client.sendRequest(message); // run in background thread
+                return Client.sendRequest(message); // run in background thread
             }
         };
 
@@ -175,7 +175,7 @@ public class DisplayScheduleController {
             // display response
             Platform.runLater(() -> {
                 // show the alert and wait until the user dismisses it
-                TCP_Client.showAlert(response[0], response[1].trim());
+                Client.showAlert(response[0], response[1].trim());
                 // make sure grid is cleared
                 populateEmptySchedule();
                 // update schedule with cleared cells
@@ -184,7 +184,7 @@ public class DisplayScheduleController {
         });
 
         task.setOnFailed(event -> {
-            Platform.runLater(() -> TCP_Client.showAlert("Error", "Failed to connect to server."));
+            Platform.runLater(() -> Client.showAlert("Error", "Failed to connect to server."));
         });
 
         // start the background thread
@@ -220,7 +220,7 @@ public class DisplayScheduleController {
 
                 // check if the line has correct number of columns (4)
                 if (data.length != 4) {
-                    TCP_Client.showAlert("Invalid CSV format", "Each row should have 4 columns: Module, Day, Time, Room.");
+                    Client.showAlert("Invalid CSV format", "Each row should have 4 columns: Module, Day, Time, Room.");
                     return;
                 }
 
@@ -229,12 +229,12 @@ public class DisplayScheduleController {
                 String time = data[2].trim();
 
                 if (!days.contains(day)) {
-                    TCP_Client.showAlert("Invalid Day", "The day '" + day + "' is not a valid day.");
+                    Client.showAlert("Invalid Day", "The day '" + day + "' is not a valid day.");
                     return;
                 }
 
                 if (!times.contains(time)) {
-                    TCP_Client.showAlert("Invalid Time", "The time '" + time + "' is not a valid lecture time.");
+                    Client.showAlert("Invalid Time", "The time '" + time + "' is not a valid lecture time.");
                     return;
                 }
 
@@ -253,7 +253,7 @@ public class DisplayScheduleController {
             Task<String> task = new Task<>() {
                 @Override
                 protected String call() {
-                    return TCP_Client.sendRequest(message); // run in background thread
+                    return Client.sendRequest(message); // run in background thread
                 }
             };
 
@@ -264,21 +264,21 @@ public class DisplayScheduleController {
 
                 // display response
                 Platform.runLater(() -> {
-                    TCP_Client.showAlert(response[0], response[1].trim());
+                    Client.showAlert(response[0], response[1].trim());
                     //update schedule with imported data
                     fetchAndDisplaySchedule();
                 });
             });
 
             task.setOnFailed(event -> {
-                Platform.runLater(() -> TCP_Client.showAlert("Error", "Failed to connect to server."));
+                Platform.runLater(() -> Client.showAlert("Error", "Failed to connect to server."));
             });
 
             // start the background thread
             new Thread(task).start();
 
         } catch (IOException e) {
-            TCP_Client.showAlert("File Read Error", "Error reading the CSV file.");
+            Client.showAlert("File Read Error", "Error reading the CSV file.");
         }
     }
 
@@ -332,7 +332,7 @@ public class DisplayScheduleController {
                 @Override
                 protected String call() {
                     //display the schedule
-                    return TCP_Client.sendRequest("DISPLAY"); // run in background thread
+                    return Client.sendRequest("DISPLAY"); // run in background thread
                 }
             };
 
@@ -341,7 +341,7 @@ public class DisplayScheduleController {
                 String response = task.getValue();
 
                 if (response == null || response.isEmpty()) {
-                    Platform.runLater(() -> TCP_Client.showAlert("Error", "No data received from the server."));
+                    Platform.runLater(() -> Client.showAlert("Error", "No data received from the server."));
                     return;
                 }
 
@@ -352,16 +352,16 @@ public class DisplayScheduleController {
 
                     // return success message
                     System.out.println("message received: Schedule exported successfully.");
-                    Platform.runLater(() -> TCP_Client.showAlert("Success", "Schedule exported successfully."));
+                    Platform.runLater(() -> Client.showAlert("Success", "Schedule exported successfully."));
                 } catch (IOException e) {
                     // return failure message
                     System.out.println("message received: Failed to export schedule.");
-                    Platform.runLater(() -> TCP_Client.showAlert("Error", "Failed to export schedule"));
+                    Platform.runLater(() -> Client.showAlert("Error", "Failed to export schedule"));
                     e.printStackTrace();
                 }
             });
 
-            task.setOnFailed(event -> Platform.runLater(() -> TCP_Client.showAlert("Error", "Failed to connect to server.")));
+            task.setOnFailed(event -> Platform.runLater(() -> Client.showAlert("Error", "Failed to connect to server.")));
 
             // start background thread
             new Thread(task).start();
@@ -377,7 +377,7 @@ public class DisplayScheduleController {
         PrinterJob job = PrinterJob.createPrinterJob();
 
         if (job == null) {
-            TCP_Client.showAlert("Error", "No printer job available");
+            Client.showAlert("Error", "No printer job available");
             return;
         }
 
@@ -398,10 +398,10 @@ public class DisplayScheduleController {
             if (success) {
                 job.endJob();
                 System.out.println("message received: Schedule exported successfully.");
-                TCP_Client.showAlert("Success", "Schedule exported successfully");
+                Client.showAlert("Success", "Schedule exported successfully");
             } else {
                 System.out.println("message received: Failed to export schedule.");
-                TCP_Client.showAlert("Error", "Failed to export schedule");
+                Client.showAlert("Error", "Failed to export schedule");
             }
         }
     }

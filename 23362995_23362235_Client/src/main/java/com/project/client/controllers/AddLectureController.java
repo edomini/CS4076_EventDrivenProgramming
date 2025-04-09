@@ -8,7 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
-import com.project.client.TCP_Client;
+import com.project.client.Client;
 
 import java.io.IOException;
 
@@ -60,7 +60,7 @@ public class AddLectureController {
     }
 
     @FXML
-    private void handleSubmit() throws IOException {
+    private void handleSubmit() {
         String output = "";
         String moduleCode = this.moduleCodeField.getText().trim();
         String selectedDay = this.dateComboBox.getValue();
@@ -69,7 +69,7 @@ public class AddLectureController {
 
 
         if (selectedDay == null || selectedTime == null || moduleCode.isEmpty() || roomCode.isEmpty()) {
-            TCP_Client.showAlert("Invalid Input", "Please enter valid module code, day, time, and room number.");
+            Client.showAlert("Invalid Input", "Please enter valid module code, day, time, and room number.");
             return;
         }
 
@@ -83,7 +83,7 @@ public class AddLectureController {
         Task<String> task = new Task<>() {
             @Override
             protected String call() {
-                return TCP_Client.sendRequest(finalOutput); // run in background thread
+                return Client.sendRequest(finalOutput); // run in background thread
             }
         };
 
@@ -94,7 +94,7 @@ public class AddLectureController {
 
             // display response
             Platform.runLater(() -> {
-                TCP_Client.showAlert(response[0], response[1].trim());
+                Client.showAlert(response[0], response[1].trim());
                 
                 //if lecture is added successfully, switch to schedule display
                 if (response[0].equals("Success")) {
@@ -102,7 +102,7 @@ public class AddLectureController {
                         BaseController.switchScene((Stage) submitButton.getScene().getWindow(), "display_schedule.fxml");
                     } catch (Exception e) {
                         System.out.println("Scene Switch Error: " + e.getMessage());
-                        TCP_Client.showAlert("Scene Switch Error", e.getMessage());
+                        Client.showAlert("Scene Switch Error", e.getMessage());
                         e.printStackTrace();
                     }
                 }
@@ -111,7 +111,7 @@ public class AddLectureController {
 
         // if task fails (usually connection error), display error alert
         task.setOnFailed(event -> {
-            Platform.runLater(() -> TCP_Client.showAlert("Error", "Failed to connect to server."));
+            Platform.runLater(() -> Client.showAlert("Error", "Failed to connect to server."));
         });
 
         // start the background thread
