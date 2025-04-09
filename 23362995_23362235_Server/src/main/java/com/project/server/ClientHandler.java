@@ -12,9 +12,9 @@ public class ClientHandler implements Runnable {
     private BufferedReader in;
     private PrintWriter out;
 
-    public ClientHandler(Socket socket, Schedule sch) {
+    public ClientHandler(Socket socket, Schedule schedule) {
         this.link = socket;
-        this.schedule = sch;
+        this.schedule = new Schedule();
     }
 
     @Override

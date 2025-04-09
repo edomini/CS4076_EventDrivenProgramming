@@ -44,7 +44,7 @@ public class OtherController {
             Platform.runLater(() -> {
                 // show the alert and wait until the user dismisses it
                 Client.showAlert(response[0], response[1].trim());
-                //stop the music
+                // stop the music
                 BackgroundMusicController.getInstance().stop();
                 // then close the program successfully
                 System.exit(0);
