@@ -57,7 +57,7 @@ public class RemoveLectureController {
     }
 
     @FXML
-    private void handleSubmit() throws IOException {
+    private void handleSubmit() {
         String output = "";
         String moduleCode = this.moduleCodeField.getText().trim();
         String selectedDay = this.dateComboBox.getValue();
