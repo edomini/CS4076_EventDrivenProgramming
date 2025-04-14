@@ -9,12 +9,16 @@ import java.net.Socket;
 public class ClientHandler implements Runnable {
     private final Socket link;
     private final Schedule schedule;
+    private final int clientNumber;
+    private String courseCode;
     private BufferedReader in;
     private PrintWriter out;
 
-    public ClientHandler(Socket socket, Schedule schedule) {
+    public ClientHandler(Socket socket, Schedule schedule, int clientNumber) {
         this.link = socket;
-        this.schedule = new Schedule();
+        this.schedule = schedule;
+        this.clientNumber = clientNumber;
+        this.courseCode = "";
     }
 
     @Override
@@ -25,18 +29,22 @@ public class ClientHandler implements Runnable {
 
             String message = "";
             while((message = in.readLine().trim()) != null){
-                System.out.println("\nmessage received: " + message);
+                if(!message.contains("courseCode")){
+                    System.out.println("\nClient " + this.toString() + ": " + message);
 
-                String response = processRequest(message);
-                out.println(response);
-                System.out.println("message sent: " + response);
+                    String response = processRequest(message);
+                    out.println(response);
+                    System.out.println("Server: " + response);
 
-                if(message.equalsIgnoreCase("STOP")){
-                    break;
+                    if(message.equalsIgnoreCase("STOP")){
+                        break;
+                    }
+                } else {
+                    this.courseCode = message.split(":")[1].trim();
                 }
             }
 
-            System.out.println("Client disconnected.");
+            System.out.printf("\nClient %d disconnected. Total clients: %d\n\n", clientNumber, (Server.clientsConnected - 1));
             link.close();
             Server.clientsConnected--;
 
@@ -82,5 +90,10 @@ public class ClientHandler implements Runnable {
         } catch (IncorrectActionException ex) {
             return "Incorrect Action: " + ex.getMessage();
         }
+    }
+
+    @Override
+    public String toString() {
+        return clientNumber + " (" + courseCode + ")";
     }
 }

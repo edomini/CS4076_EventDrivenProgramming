@@ -8,18 +8,28 @@ public class Client {
     private Socket socket;
     private static BufferedReader in;
     private static PrintWriter out;
+    private static String courseCode;
     private static final String SERVER_ADDRESS = "localhost";
     private static final int SERVER_PORT = 1234;
 
-    public boolean connect() {
+    public boolean connect(String code) {
         try {
             socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
+
+            //send course code to server
+            courseCode = code;
+            out.println("courseCode:" + courseCode); //send course code to server
+
             return true;
         } catch (IOException ex) {
             return false;
         }
+    }
+
+    public static String getCourseCode() {
+        return courseCode;
     }
 
     public void disconnect(){

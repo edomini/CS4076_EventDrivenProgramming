@@ -18,7 +18,7 @@ public class Schedule {
         }
     }
 
-    public String addLecture(Lecture lec) throws IncorrectActionException {
+    public synchronized String addLecture(Lecture lec) throws IncorrectActionException {
         String response;
 
         // check if module is already in list
@@ -59,7 +59,7 @@ public class Schedule {
         return response;
     }
 
-    public String removeLecture(Lecture lec) throws IncorrectActionException {
+    public synchronized String removeLecture(Lecture lec) throws IncorrectActionException {
         String response;
 
         //check if the lecture exists
@@ -97,7 +97,7 @@ public class Schedule {
         return response;
     }
 
-    public String displaySchedule(){
+    public synchronized String displaySchedule(){
         if(moduleCount == 0){
             return "Schedule empty.";
         }
@@ -116,7 +116,7 @@ public class Schedule {
         return response.toString();
     }
 
-    public String clearSchedule(){
+    public synchronized String clearSchedule(){
         //reset module list and counter so a new 5 modules can be added
         modules.clear();
         moduleCount = 0;

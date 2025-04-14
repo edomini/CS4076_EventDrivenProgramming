@@ -26,7 +26,7 @@ public class OtherController {
     @FXML
     private void handleStop() {
         String message = "STOP";
-        System.out.println("\nmessage sent: " + message);
+        System.out.println("\nClient: " + message);
 
         Task<String> task = new Task<>() {
             @Override
@@ -38,7 +38,7 @@ public class OtherController {
         // when task is completed, process server response
         task.setOnSucceeded(event -> {
             String[] response = task.getValue().split(":");
-            System.out.println("message received: " + response[1].trim());
+            System.out.println("Server: " + response[1].trim());
 
             // display response
             Platform.runLater(() -> {
@@ -60,7 +60,7 @@ public class OtherController {
     @FXML
     private void handleOther(){
         String message = "OTHER";
-        System.out.println("\nmessage sent: " + message);
+        System.out.println("\nClient: " + message);
 
         Task<String> task = new Task<>() {
             @Override
@@ -72,7 +72,7 @@ public class OtherController {
         // when task is completed, process server response
         task.setOnSucceeded(event -> {
             String[] response = task.getValue().split(":");
-            System.out.println("message received: " + response[1].trim());
+            System.out.println("Server: " + response[1].trim());
 
             // display response
             Platform.runLater(() -> Client.showAlert(response[0], response[1].trim()));

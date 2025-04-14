@@ -71,7 +71,7 @@ public class RemoveLectureController {
 
         // message should be of the form: "ACTION (e.g. ADD), module code, day (e.g. Monday), time (e.g. 14:00), lecture room"
         output = String.format("REMOVE,%s,%s,%s,%s", moduleCode, selectedDay, selectedTime, roomCode);
-        System.out.println("\nmessage sent: " + output);
+        System.out.println("\nClient: " + output);
 
         // create a background task
         String finalOutput = output;
@@ -85,7 +85,7 @@ public class RemoveLectureController {
         // when task is completed, process server response
         task.setOnSucceeded(event -> {
             String[] response = task.getValue().split(":", 2);
-            System.out.println("message received: " + response[1].trim());
+            System.out.println("Server: " + response[1].trim());
 
             // display response
             Platform.runLater(() -> {

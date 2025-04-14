@@ -27,6 +27,9 @@ public class DisplayScheduleController {
     private GridPane scheduleGrid;
 
     @FXML
+    private Label timetableLabel;
+
+    @FXML
     private Button importButton;
 
     @FXML
@@ -48,6 +51,10 @@ public class DisplayScheduleController {
 
     @FXML
     public void initialize() {
+        // set the title with course code
+        String course = Client.getCourseCode();
+        timetableLabel.setText(course + " Timetable");
+
         // 'Time' title label (0th col, 0th row)
         Label timeTitle = new Label("Time");
         timeTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
@@ -79,14 +86,14 @@ public class DisplayScheduleController {
     private void fetchAndDisplaySchedule() {
         new Thread(() -> {
             //send request to server
-            System.out.println("\nmessage sent: DISPLAY");
+            System.out.println("\nClient: DISPLAY");
             String response = Client.sendRequest("DISPLAY");
 
             //print server response
             if (response == null || response.isEmpty() || response.equals("Schedule empty.")){
-                System.out.println("message received: Schedule empty.");
+                System.out.println("Server: Schedule empty.");
             } else {
-                System.out.println("message received: " + response);
+                System.out.println("Server: " + response);
             }
 
             //update the schedule
@@ -158,7 +165,7 @@ public class DisplayScheduleController {
     @FXML
     private void handleClear(){
         String message = "CLEAR";
-        System.out.println("\nmessage sent: " + message);
+        System.out.println("\nClient: " + message);
 
         Task<String> task = new Task<>() {
             @Override
@@ -170,7 +177,7 @@ public class DisplayScheduleController {
         // when task is completed, process server response
         task.setOnSucceeded(event -> {
             String[] response = task.getValue().split(":");
-            System.out.println("message received: " + response[1].trim());
+            System.out.println("Server: " + response[1].trim());
 
             // display response
             Platform.runLater(() -> {
@@ -248,7 +255,7 @@ public class DisplayScheduleController {
 
             //send info to server
             String message = "IMPORT," + formattedData;
-            System.out.println("\nmessage sent: " + message);
+            System.out.println("\nClient: " + message);
 
             Task<String> task = new Task<>() {
                 @Override
@@ -260,7 +267,7 @@ public class DisplayScheduleController {
             // when task is completed, process server response
             task.setOnSucceeded(event -> {
                 String[] response = task.getValue().split(":", 2);
-                System.out.println("message received: " + response[1].trim());
+                System.out.println("Server: " + response[1].trim());
 
                 // display response
                 Platform.runLater(() -> {
@@ -315,7 +322,7 @@ public class DisplayScheduleController {
 
     @FXML
     private void handleExportCSV(){
-        System.out.println("\nmessage sent: Export as CSV");
+        System.out.println("\nClient: Export as CSV");
 
         // create a FileChooser to choose file name and save location
         FileChooser fileChooser = new FileChooser();
@@ -351,11 +358,11 @@ public class DisplayScheduleController {
                     writer.write(formattedResponse);
 
                     // return success message
-                    System.out.println("message received: Schedule exported successfully.");
+                    System.out.println("Server: Schedule exported successfully.");
                     Platform.runLater(() -> Client.showAlert("Success", "Schedule exported successfully."));
                 } catch (IOException e) {
                     // return failure message
-                    System.out.println("message received: Failed to export schedule.");
+                    System.out.println("Server: Failed to export schedule.");
                     Platform.runLater(() -> Client.showAlert("Error", "Failed to export schedule"));
                     e.printStackTrace();
                 }
@@ -371,7 +378,7 @@ public class DisplayScheduleController {
 
     @FXML
     private void handleExportPDF(){
-        System.out.println("\nmessage sent: Export as PDF");
+        System.out.println("\nClient: Export as PDF");
 
         // create printerJob object
         PrinterJob job = PrinterJob.createPrinterJob();
@@ -397,10 +404,10 @@ public class DisplayScheduleController {
 
             if (success) {
                 job.endJob();
-                System.out.println("message received: Schedule exported successfully.");
+                System.out.println("Server: Schedule exported successfully.");
                 Client.showAlert("Success", "Schedule exported successfully");
             } else {
-                System.out.println("message received: Failed to export schedule.");
+                System.out.println("Server: Failed to export schedule.");
                 Client.showAlert("Error", "Failed to export schedule");
             }
         }

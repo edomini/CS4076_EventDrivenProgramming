@@ -28,14 +28,14 @@ public class Server {
                 //accept client connection
                 Socket link = serverSocket.accept();
                 clientsConnected++;
-                System.out.println("New client connected. Total clients: " + clientsConnected);
+                System.out.println("\nNew client connected. Total clients: " + clientsConnected);
 
                 //create a new schedule for each client
                 Schedule schedule = new Schedule();
                 database.add(schedule); //add schedule to database
 
                 //create a new thread for each client
-                new Thread(new ClientHandler(link, schedule)).start();
+                new Thread(new ClientHandler(link, schedule, clientsConnected)).start();
             } catch (IOException ex){
                 System.out.println("Failed to connect to client.");
             }

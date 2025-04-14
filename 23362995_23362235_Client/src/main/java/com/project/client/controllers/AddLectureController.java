@@ -75,7 +75,7 @@ public class AddLectureController {
 
         // message should be of the form: "ACTION (e.g. ADD), module code, day (e.g. Monday), time (e.g. 14:00), lecture room"
         output = String.format("ADD,%s,%s,%s,%s", moduleCode, selectedDay, selectedTime, roomCode);
-        System.out.println("\nmessage sent: " + output);
+        System.out.println("\nClient: " + output);
 
 
         // create a background task
@@ -90,7 +90,7 @@ public class AddLectureController {
         // when task is completed, process server response
         task.setOnSucceeded(event -> {
             String[] response = task.getValue().split(":", 2);
-            System.out.println("message received: " + response[1].trim());
+            System.out.println("Server: " + response[1].trim());
 
             // display response
             Platform.runLater(() -> {

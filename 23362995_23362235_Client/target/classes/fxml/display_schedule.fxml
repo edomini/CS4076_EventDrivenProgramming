@@ -30,7 +30,7 @@
                 <HBox HBox.hgrow="ALWAYS"/>
 
                 <!-- Timetable Title -->
-                <Label text="Timetable" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+                <Label fx:id="timetableLabel" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
 
                 <!-- End of spacer -->
                 <HBox HBox.hgrow="ALWAYS"/>
