@@ -7,15 +7,30 @@ public class Schedule {
     private final Lecture[][] schedule; //schedule array for display
     private final ArrayList<String> modules;
     private int moduleCount;
+    // list of clients accessing this schedule
+    private final ArrayList<ClientHandler> clients;
 
     public Schedule(){
         this.schedule = new Lecture[Lecture.times.size()][Lecture.days.size()];
         this.modules = new ArrayList<>(5);
         this.moduleCount = 0;
+        this.clients = new ArrayList<>();
 
         for (Lecture[] row : schedule) {
             Arrays.fill(row, null); //initialise to null
         }
+    }
+
+    public synchronized void addClient(ClientHandler client) {
+        clients.add(client);
+    }
+
+    public synchronized void removeClient(ClientHandler client) {
+        clients.remove(client);
+    }
+
+    public synchronized ArrayList<ClientHandler> getClients() {
+        return new ArrayList<>(clients); //return a copy of the list to avoid concurrent modification
     }
 
     public synchronized String addLecture(Lecture lec) throws IncorrectActionException {

@@ -22,7 +22,7 @@ public class LoginController {
     @FXML
     public void onLoginButtonClick() throws IOException {
         //get course code from text field
-        String courseCode = courseCodeField.getText().trim();
+        String courseCode = courseCodeField.getText().toUpperCase().trim();
 
         //check if course code is empty
         if(courseCode.isEmpty()){
@@ -37,6 +37,9 @@ public class LoginController {
         if(!isConnected){
             Client.showAlert("Error", "Failed to connect to server.");
             System.exit(1);
+        } else {
+            //start listening for GUI update requests from server
+            client.listenForUpdates();
         }
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/front.fxml"));//login ---> front

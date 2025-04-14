@@ -14,11 +14,14 @@ public class ClientHandler implements Runnable {
     private BufferedReader in;
     private PrintWriter out;
 
-    public ClientHandler(Socket socket, Schedule schedule, int clientNumber) {
+    public ClientHandler(Socket socket, Schedule schedule, int clientNumber, String courseCode) {
         this.link = socket;
         this.schedule = schedule;
         this.clientNumber = clientNumber;
-        this.courseCode = "";
+        this.courseCode = courseCode;
+
+        //add client to schedule
+        schedule.addClient(this);
     }
 
     @Override
@@ -29,25 +32,24 @@ public class ClientHandler implements Runnable {
 
             String message = "";
             while((message = in.readLine().trim()) != null){
-                if(!message.contains("courseCode")){
-                    System.out.println("\nClient " + this.toString() + ": " + message);
+                System.out.println("\nClient " + this.toString() + ": " + message);
 
-                    String response = processRequest(message);
-                    out.println(response);
-                    System.out.println("Server: " + response);
+                String response = processRequest(message);
+                out.println(response);
+                System.out.println("Server: " + response);
 
-                    if(message.equalsIgnoreCase("STOP")){
-                        break;
-                    }
-                } else {
-                    this.courseCode = message.split(":")[1].trim();
+                if(message.equalsIgnoreCase("STOP")){
+                    break;
                 }
             }
 
-            System.out.printf("\nClient %d disconnected. Total clients: %d\n\n", clientNumber, (Server.clientsConnected - 1));
+            System.out.printf("\nClient %s disconnected. Total clients: %d\n\n", this.toString(), (Server.clientsConnected - 1));
             link.close();
-            Server.clientsConnected--;
-
+            synchronized (this) {
+                Server.clientsConnected--;
+                Server.offset++;
+            }
+            schedule.removeClient(this);
         } catch (IOException ex) {
             System.out.println("Connection error: " + ex.getMessage());
         }
@@ -89,6 +91,13 @@ public class ClientHandler implements Runnable {
             }
         } catch (IncorrectActionException ex) {
             return "Incorrect Action: " + ex.getMessage();
+        } finally {
+            // send message "UPDATE" to all clients w same course code
+            for (ClientHandler client : schedule.getClients()) {
+                if (client != this) { // don't send to self
+                    client.out.println("UPDATE");
+                }
+            }
         }
     }
 

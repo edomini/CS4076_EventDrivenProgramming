@@ -23,6 +23,8 @@ public class DisplayScheduleController {
     public static final List<String> days = List.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday");
     public static final List<String> times = List.of("09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00");
 
+    private static DisplayScheduleController instance;
+
     @FXML
     private GridPane scheduleGrid;
 
@@ -51,6 +53,8 @@ public class DisplayScheduleController {
 
     @FXML
     public void initialize() {
+        instance = this; // set the instance to this controller
+
         // set the title with course code
         String course = Client.getCourseCode();
         timetableLabel.setText(course + " Timetable");
@@ -83,7 +87,11 @@ public class DisplayScheduleController {
         fetchAndDisplaySchedule();
     }
 
-    private void fetchAndDisplaySchedule() {
+    public static DisplayScheduleController getInstance() {
+        return instance; // return the instance of this controller
+    }
+
+    public void fetchAndDisplaySchedule() {
         new Thread(() -> {
             //send request to server
             System.out.println("\nClient: DISPLAY");

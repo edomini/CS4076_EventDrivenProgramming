@@ -1,8 +1,11 @@
 package com.project.client;
 
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import java.io.*;
 import java.net.Socket;
+
+import com.project.client.controllers.DisplayScheduleController;
 
 public class Client {
     private Socket socket;
@@ -55,6 +58,29 @@ public class Client {
             e.printStackTrace();
             return "Error: Cannot connect to server.";
         }
+    }
+
+    //make sure the GUI updates when changes are made to shared schedule
+    public void listenForUpdates() {
+        new Thread(() -> {
+            try {
+                String message;
+                while ((message = in.readLine()) != null) {
+                    if(message.equals("UPDATE")){
+                        //trigger fetchAndDisplaySchedule()
+                        Platform.runLater(() -> {
+                            DisplayScheduleController controller = DisplayScheduleController.getInstance();
+                            if (controller != null) {
+                                controller.fetchAndDisplaySchedule();
+                            }
+                        });
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert("Error", "Cannot update schedule.");
+            }
+        }).start();
     }
 
     //show alerts for actions or errors
