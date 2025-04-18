@@ -3,13 +3,9 @@ package com.project.client;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
-import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.Socket;
-
-import com.project.client.controllers.BaseController;
-import com.project.client.controllers.DisplayScheduleController;
 
 public class Client {
     private Socket socket;

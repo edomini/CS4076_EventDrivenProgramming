@@ -14,13 +14,14 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        
         //FXML file
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/login.fxml"));
 
-        Scene scene = new Scene(root, 450, 550);
+        Scene scene = new Scene(root, 1000, 700);
 
         stage.setScene(scene);
-        stage.setMaximized(true);
+        //stage.setFullScreen(true);
         stage.show();
     }
 }

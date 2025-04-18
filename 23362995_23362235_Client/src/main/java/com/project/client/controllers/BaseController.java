@@ -2,7 +2,7 @@ package com.project.client.controllers;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
+import javafx.scene.Parent;
 import javafx.stage.Stage;
 
 import com.project.client.Client;
@@ -13,7 +13,7 @@ public class BaseController {
     public static void switchScene(Stage stage, String fxmlFile, Client client) {
         try {
             FXMLLoader loader = new FXMLLoader(BaseController.class.getResource("/fxml/" + fxmlFile));
-            Pane root = loader.load();
+            Parent root = loader.load();
 
             switch (fxmlFile) {
                 case "add_lecture.fxml":
@@ -38,11 +38,12 @@ public class BaseController {
                     break;
             }
 
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root, 1000, 700);
 
-            boolean wasFullScreen = stage.isFullScreen();
+            //oolean wasFullScreen = stage.isFullScreen();
             stage.setScene(scene);
-            stage.setFullScreen(wasFullScreen);
+            //stage.setFullScreen(true);
+            //stage.hide();
             stage.show();
             
             BackgroundMusicController.getInstance().play();
