@@ -26,7 +26,7 @@ public class BaseController {
                     break;
                 case "display_schedule.fxml":
                     DisplayScheduleController displayScheduleController = loader.getController();
-                    displayScheduleController.setClient(client);
+                    displayScheduleController.initClient(client);
                     break;
                 case "other.fxml":
                     OtherController otherController = loader.getController();

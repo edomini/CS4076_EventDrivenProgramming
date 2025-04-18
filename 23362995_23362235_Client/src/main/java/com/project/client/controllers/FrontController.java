@@ -8,6 +8,7 @@ import com.project.client.Client;
 public class FrontController {
     @FXML
     private Button addLectureButton, removeLectureButton, displayScheduleButton, otherButton;
+    
     private Client client;
 
     public void setClient(Client client) {

@@ -59,16 +59,19 @@ public class ClientHandler implements Runnable {
         //remove action from message
         String[] str = message.split(",", 2);
         String action = str[0].toUpperCase();
+        boolean mod = false;
 
         try {
             switch (action) {
                 case "ADD":
                     String[] addParts = str[1].split(",");
                     Lecture addLec = new Lecture(addParts[0], addParts[1], addParts[2], addParts[3]);
+                    mod = true;
                     return schedule.addLecture(addLec);
                 case "REMOVE":
                     String[] remParts = str[1].split(",");
                     Lecture remLec = new Lecture(remParts[0], remParts[1], remParts[2], remParts[3]);
+                    mod = true;
                     return schedule.removeLecture(remLec);
                 case "DISPLAY":
                     return schedule.displaySchedule();
@@ -81,8 +84,10 @@ public class ClientHandler implements Runnable {
                         Lecture lec = new Lecture(parts[0], parts[1], parts[2], parts[3]);
                         schedule.addLecture(lec);
                     }
+                    mod = true;
                     return "Success: Schedule imported successfully.";
                 case "CLEAR":
+                    mod = true;
                     return schedule.clearSchedule();
                 case "STOP":
                     return "TERMINATE: Closing connection...";
@@ -92,16 +97,21 @@ public class ClientHandler implements Runnable {
         } catch (IncorrectActionException ex) {
             return "Incorrect Action: " + ex.getMessage();
         } 
-        /*
-        finally {
+        //finally {
             // send message "UPDATE" to all clients w same course code
-            for (ClientHandler client : schedule.getClients()) {
-                if (client != this) { // don't send to self
-                    client.out.println("UPDATE");
-                }
+            //if(mod) {
+                //broadcast("UPDATE");
+            //}
+        //}
+
+    }
+
+    public void broadcast(String message) {
+        for (ClientHandler client : schedule.getClients()) {
+            if (client != this) { // don't send to self
+                client.out.println(message);
             }
         }
-        */
     }
 
     @Override

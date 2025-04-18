@@ -13,12 +13,12 @@ import com.project.client.controllers.DisplayScheduleController;
 
 public class Client {
     private Socket socket;
-    private static BufferedReader in;
-    private static PrintWriter out;
-    private static String courseCode;
+    private BufferedReader in;
+    private PrintWriter out;
+    private String courseCode;
     private static final String SERVER_ADDRESS = "localhost";
     private static final int SERVER_PORT = 1234;
-    private static boolean ignoreNextUpdate = false;
+    private boolean ignoreNextUpdate = false;
 
     public boolean connect(String code) {
         try {
@@ -38,7 +38,7 @@ public class Client {
         }
     }
 
-    public static String getCourseCode() {
+    public String getCourseCode() {
         return courseCode;
     }
 
@@ -98,19 +98,15 @@ public class Client {
                     callback.run(); // run the callback function
                 }
             });
-            //ans = "S";
         });
 
         task.setOnFailed(event -> {
             Platform.runLater(() -> showAlert("Error", "Failed to connect to server."));
-            //ans = "F";
         });
 
         // start the background thread
         new Thread(task).start();
-        //return ans;
     }
-
 
     /*
     //make sure the GUI updates when changes are made to shared schedule

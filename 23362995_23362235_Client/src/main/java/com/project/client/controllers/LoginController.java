@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -43,7 +44,7 @@ public class LoginController {
           //  client.listenForUpdates();
         //}
 
-        BaseController.switchScene((Stage) loginButton.getScene().getWindow(), "front.fxml", client);//login ---> front
+        Platform.runLater(() -> BaseController.switchScene((Stage) loginButton.getScene().getWindow(), "front.fxml", client));//login ---> front
 
         /*
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/front.fxml"));//login ---> front
