@@ -13,6 +13,7 @@ import com.project.client.Client;
 import java.io.IOException;
 
 public class OtherController {
+    private Client client;
 
     @FXML
     private Button backButton;
@@ -23,9 +24,22 @@ public class OtherController {
     @FXML
     private Button otherButton;
 
+    public void setClient(Client client) {
+        // Set the client instance if needed
+        this.client = client;
+    }
+
     @FXML
     private void handleStop() {
         String message = "STOP";
+        client.readResponse(message, () -> {
+            // stop the music
+            BackgroundMusicController.getInstance().stop();
+            // then close the program successfully
+            System.exit(0);
+        });
+
+        /*
         System.out.println("\nClient: " + message);
 
         Task<String> task = new Task<>() {
@@ -55,11 +69,15 @@ public class OtherController {
 
         // start the background thread
         new Thread(task).start();
+        */
     }
 
     @FXML
     private void handleOther(){
         String message = "OTHER";
+        client.readResponse(message, null);
+
+        /*
         System.out.println("\nClient: " + message);
 
         Task<String> task = new Task<>() {
@@ -82,6 +100,7 @@ public class OtherController {
 
         // start the background thread
         new Thread(task).start();
+        */
     }
 
     @FXML

@@ -1,10 +1,14 @@
 package com.project.client;
 
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
+import javafx.stage.Stage;
+
 import java.io.*;
 import java.net.Socket;
 
+import com.project.client.controllers.BaseController;
 import com.project.client.controllers.DisplayScheduleController;
 
 public class Client {
@@ -14,6 +18,7 @@ public class Client {
     private static String courseCode;
     private static final String SERVER_ADDRESS = "localhost";
     private static final int SERVER_PORT = 1234;
+    private static boolean ignoreNextUpdate = false;
 
     public boolean connect(String code) {
         try {
@@ -22,8 +27,10 @@ public class Client {
             out = new PrintWriter(socket.getOutputStream(), true);
 
             //send course code to server
-            courseCode = code;
+            this.courseCode = code;
             out.println("courseCode:" + courseCode); //send course code to server
+
+            //listenForUpdates();
 
             return true;
         } catch (IOException ex) {
@@ -43,10 +50,15 @@ public class Client {
         }
     }
 
-    public static String sendRequest(String request) {
+    public synchronized String sendRequest(String request) {
         try {
             //send request to server
             out.println(request);
+
+            // set flag to ignore next update
+            if(request.contains("ADD") || request.contains("REMOVE") || request.contains("CLEAR")){
+                ignoreNextUpdate = true;
+            }
 
             //read response from server
             String response = in.readLine();
@@ -60,6 +72,47 @@ public class Client {
         }
     }
 
+    public synchronized void readResponse(String message, Runnable callback) {
+        //String ans = "";
+        System.out.println("\nClient: " + message);
+
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() {
+                return sendRequest(message); // run in background thread
+            }
+        };
+
+        // when task is completed, process server response
+        task.setOnSucceeded(event -> {
+            String[] response = task.getValue().split(":");
+            System.out.println("Server: " + task.getValue());
+            System.out.println("Server: " + response[1].trim());
+
+            // display response
+            Platform.runLater(() -> {
+                // show the alert and wait until the user dismisses it
+                showAlert(response[0], response[1].trim());
+
+                if(callback != null && !response[0].contains("Incorrect Action")){
+                    callback.run(); // run the callback function
+                }
+            });
+            //ans = "S";
+        });
+
+        task.setOnFailed(event -> {
+            Platform.runLater(() -> showAlert("Error", "Failed to connect to server."));
+            //ans = "F";
+        });
+
+        // start the background thread
+        new Thread(task).start();
+        //return ans;
+    }
+
+
+    /*
     //make sure the GUI updates when changes are made to shared schedule
     public void listenForUpdates() {
         new Thread(() -> {
@@ -67,6 +120,11 @@ public class Client {
                 String message;
                 while ((message = in.readLine()) != null) {
                     if(message.equals("UPDATE")){
+                        if(ignoreNextUpdate){
+                            ignoreNextUpdate = false; // reset flag
+                            continue; // ignore this update
+                        }
+
                         //trigger fetchAndDisplaySchedule()
                         Platform.runLater(() -> {
                             DisplayScheduleController controller = DisplayScheduleController.getInstance();
@@ -82,6 +140,8 @@ public class Client {
             }
         }).start();
     }
+    */
+
 
     //show alerts for actions or errors
     public static void showAlert(String title, String message) {

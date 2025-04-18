@@ -13,6 +13,7 @@ import com.project.client.Client;
 import java.io.IOException;
 
 public class AddLectureController {
+    private Client client;
 
     @FXML
     private ComboBox<String> dateComboBox; // Date
@@ -38,6 +39,11 @@ public class AddLectureController {
         for (int hour = 9; hour <= 17; hour++) {
             this.timeComboBox.getItems().add(String.format("%02d:00", hour));
         }
+    }
+
+    public void setClient(Client client) {
+        // Set the client instance if needed
+        this.client = client;
     }
 
     @FXML
@@ -80,6 +86,18 @@ public class AddLectureController {
 
         // create a background task
         String finalOutput = output;
+        client.readResponse(finalOutput, () -> {
+            try {
+                // switch to schedule display if not already on it
+                BaseController.switchScene((Stage) submitButton.getScene().getWindow(), "display_schedule.fxml", client);
+            } catch (Exception e) {
+                System.out.println("Scene Switch Error: " + e.getMessage());
+                Client.showAlert("Scene Switch Error", e.getMessage());
+                e.printStackTrace();
+            }
+        });
+
+        /*
         Task<String> task = new Task<>() {
             @Override
             protected String call() {
@@ -99,7 +117,8 @@ public class AddLectureController {
                 //if lecture is added successfully, switch to schedule display
                 if (response[0].equals("Success")) {
                     try {
-                        BaseController.switchScene((Stage) submitButton.getScene().getWindow(), "display_schedule.fxml");
+                        // switch to schedule display if not already on it
+                        BaseController.switchScene((Stage) submitButton.getScene().getWindow(), "display_schedule.fxml", client);
                     } catch (Exception e) {
                         System.out.println("Scene Switch Error: " + e.getMessage());
                         Client.showAlert("Scene Switch Error", e.getMessage());
@@ -116,5 +135,6 @@ public class AddLectureController {
 
         // start the background thread
         new Thread(task).start();
+        */
     }
 }

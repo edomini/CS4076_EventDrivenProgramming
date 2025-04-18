@@ -24,6 +24,7 @@ public class DisplayScheduleController {
     public static final List<String> times = List.of("09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00");
 
     private static DisplayScheduleController instance;
+    private Client client;
 
     @FXML
     private GridPane scheduleGrid;
@@ -50,6 +51,10 @@ public class DisplayScheduleController {
             "09:00 - 10:00", "10:00 - 11:00", "11:00 - 12:00", "12:00 - 13:00",
             "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00", "17:00 - 18:00"
     };
+
+    public void setClient(Client client) {
+        this.client = client; // set the client instance
+    }
 
     @FXML
     public void initialize() {
@@ -79,23 +84,17 @@ public class DisplayScheduleController {
             scheduleGrid.add(dayLabel, j, 0); // column j, row 0
             GridPane.setHalignment(dayLabel, HPos.CENTER); // center it over the schedule cells
         }
-        
-        //add empty cells to each cell of grid pane
-        populateEmptySchedule();
 
         // load the schedule
         fetchAndDisplaySchedule();
     }
 
-    public static DisplayScheduleController getInstance() {
-        return instance; // return the instance of this controller
-    }
-
-    public void fetchAndDisplaySchedule() {
+    public synchronized void fetchAndDisplaySchedule() {
+        System.out.println("fetchAndDisplaySchedule() called");
         new Thread(() -> {
             //send request to server
             System.out.println("\nClient: DISPLAY");
-            String response = Client.sendRequest("DISPLAY");
+            String response = client.sendRequest("DISPLAY");
 
             //print server response
             if (response == null || response.isEmpty() || response.equals("Schedule empty.")){
@@ -104,18 +103,22 @@ public class DisplayScheduleController {
                 System.out.println("Server: " + response);
             }
 
-            //update the schedule
-            Platform.runLater(() -> {
-                updateScheduleGrid(response);
-            });
+            updateScheduleGrid(response);
         }).start(); //start the thread
     }
 
-    private void updateScheduleGrid(String response) {
-        if (response == null || response.isEmpty()) {
+    private synchronized void updateScheduleGrid(String response) {
+        System.out.println("updateScheduleGrid() called");
+        
+        Platform.runLater(() -> {
+            //clear the grid pane before populating it with new data
             populateEmptySchedule();
-            return;
-        }
+
+            //if schedule is empty, end here
+            if (response == null || response.isEmpty() || response.equals("Schedule empty.")) {
+                return;
+            }
+        });
 
         //split string of schedule array from server
         String[] scheduleData = response.split(";");
@@ -133,20 +136,25 @@ public class DisplayScheduleController {
                 int row = times.indexOf(time) + 1;
                 int col = days.indexOf(day) + 1;
 
-                //add lecture to correct place in grid pane
-                if (row != 0 && col != 0) {
-                    Label moduleLabel = new Label(module + "\n" + room);
-                    scheduleGrid.add(moduleLabel, col, row);
-                    GridPane.setHalignment(moduleLabel, HPos.CENTER);
-                } else {
-                    System.out.println("Positioning error for schedule: position [" + row + "," + col + "]");
-                    Client.showAlert("Error", "Positioning error for schedule: position [" + row + "," + col + "]");
-                }
+                Platform.runLater(() -> {
+                    //add lecture to correct place in grid pane
+                    if (row != 0 && col != 0) {
+                        Label moduleLabel = new Label(module + "\n" + room);
+                        scheduleGrid.add(moduleLabel, col, row);
+                        GridPane.setHalignment(moduleLabel, HPos.CENTER);
+                    } else {
+                        System.out.println("Positioning error for schedule: position [" + row + "," + col + "]");
+                        Client.showAlert("Error", "Positioning error for schedule: position [" + row + "," + col + "]");
+                    }
+                });
             }
         }
+
+        System.out.println("updateScheduleGrid() completed");
     }
 
-    private void populateEmptySchedule() {
+    private synchronized void populateEmptySchedule() {
+        System.out.println("populateEmptySchedule() called");
         // remove all the lecture slot labels, but keep the day names and times
         scheduleGrid.getChildren().removeIf(node -> {
             Integer colIndex = GridPane.getColumnIndex(node);
@@ -155,6 +163,7 @@ public class DisplayScheduleController {
             // Remove only the cells that are not part of the header (days/times)
             return colIndex != null && rowIndex != null && colIndex > 0 && rowIndex > 0;
         });
+
         for (int row = 1; row <= timeSlots.length; row++) {
             for (int col = 1; col <= 5; col++) {
                 Label emptyCell = new Label("");
@@ -163,16 +172,35 @@ public class DisplayScheduleController {
                 scheduleGrid.add(emptyCell, col, row);
             }
         }
+
+        System.out.println("populateEmptySchedule() completed");
     }
 
     @FXML
     private void handleBackAction() {
-        BaseController.switchScene((Stage) backButton.getScene().getWindow(), "front.fxml");//schedule ---> front
+        BaseController.switchScene((Stage) backButton.getScene().getWindow(), "front.fxml", client);//schedule ---> front
     }
 
     @FXML
     private void handleClear(){
         String message = "CLEAR";
+
+        client.readResponse(message, () -> {
+            populateEmptySchedule();
+            fetchAndDisplaySchedule();
+        });
+
+        //fetchAndDisplaySchedule();
+
+        /*
+        if(s.equals("S")){
+            System.out.println("Success");
+            populateEmptySchedule();
+            fetchAndDisplaySchedule();
+        }
+        */
+
+        /* 
         System.out.println("\nClient: " + message);
 
         Task<String> task = new Task<>() {
@@ -204,6 +232,7 @@ public class DisplayScheduleController {
 
         // start the background thread
         new Thread(task).start();
+        */
     }
 
     @FXML
@@ -263,6 +292,9 @@ public class DisplayScheduleController {
 
             //send info to server
             String message = "IMPORT," + formattedData;
+            client.readResponse(message, this::fetchAndDisplaySchedule);
+
+            /*
             System.out.println("\nClient: " + message);
 
             Task<String> task = new Task<>() {
@@ -291,6 +323,7 @@ public class DisplayScheduleController {
 
             // start the background thread
             new Thread(task).start();
+            */
 
         } catch (IOException e) {
             Client.showAlert("File Read Error", "Error reading the CSV file.");
@@ -347,7 +380,7 @@ public class DisplayScheduleController {
                 @Override
                 protected String call() {
                     //display the schedule
-                    return Client.sendRequest("DISPLAY"); // run in background thread
+                    return client.sendRequest("DISPLAY"); // run in background thread
                 }
             };
 

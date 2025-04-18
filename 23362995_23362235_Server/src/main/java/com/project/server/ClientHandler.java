@@ -91,7 +91,9 @@ public class ClientHandler implements Runnable {
             }
         } catch (IncorrectActionException ex) {
             return "Incorrect Action: " + ex.getMessage();
-        } finally {
+        } 
+        /*
+        finally {
             // send message "UPDATE" to all clients w same course code
             for (ClientHandler client : schedule.getClients()) {
                 if (client != this) { // don't send to self
@@ -99,6 +101,7 @@ public class ClientHandler implements Runnable {
                 }
             }
         }
+        */
     }
 
     @Override

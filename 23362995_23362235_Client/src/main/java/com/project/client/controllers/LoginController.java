@@ -37,17 +37,22 @@ public class LoginController {
         if(!isConnected){
             Client.showAlert("Error", "Failed to connect to server.");
             System.exit(1);
-        } else {
+        } 
+        //else {
             //start listening for GUI update requests from server
-            client.listenForUpdates();
-        }
+          //  client.listenForUpdates();
+        //}
 
+        BaseController.switchScene((Stage) loginButton.getScene().getWindow(), "front.fxml", client);//login ---> front
+
+        /*
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/front.fxml"));//login ---> front
         Scene scene = new Scene(loader.load());
 
         Stage stage = (Stage) loginButton.getScene().getWindow();
         stage.setScene(scene);
         stage.show();
+        */
     }
 }
 
