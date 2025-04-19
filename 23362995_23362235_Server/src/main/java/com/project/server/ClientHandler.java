@@ -89,6 +89,9 @@ public class ClientHandler implements Runnable {
                 case "CLEAR":
                     mod = true;
                     return schedule.clearSchedule();
+                case "EARLY":
+                    mod = true;
+                    return schedule.earlyLectures();
                 case "STOP":
                     return "TERMINATE: Closing connection...";
                 default:

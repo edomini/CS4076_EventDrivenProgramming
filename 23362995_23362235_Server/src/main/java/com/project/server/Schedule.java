@@ -144,4 +144,12 @@ public class Schedule {
         //set message for client
         return "Success: Schedule cleared successfully.";
     }
+
+    public synchronized String earlyLectures(){
+        //move lectures to earliest time slots
+        EarlyLectures.moveLectures(schedule);
+
+        //System.out.println(displaySchedule());
+        return "Success: Lectures rescheduled where applicable.";
+    }
 }

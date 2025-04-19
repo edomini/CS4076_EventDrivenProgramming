@@ -192,7 +192,7 @@ public class DisplayScheduleController {
         String message = "CLEAR";
 
         client.readResponse(message, () -> {
-            populateEmptySchedule();
+            //populateEmptySchedule();
             fetchAndDisplaySchedule();
         });
 

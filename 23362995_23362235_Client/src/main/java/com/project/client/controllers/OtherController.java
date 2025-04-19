@@ -23,6 +23,9 @@ public class OtherController {
     @FXML
     private Button otherButton;
 
+    @FXML
+    private Button earlyLecturesButton;
+
     public void setClient(Client client) {
         // Set the client instance if needed
         this.client = client;
@@ -105,6 +108,20 @@ public class OtherController {
     @FXML
     private void handleBack() {
         goToFrontPage();
+    }
+
+    @FXML
+    private void handleEarlyLectures() {
+        String message = "EARLY";
+        client.readResponse(message, () -> {
+            try {
+                // switch to schedule display if not already on it
+                BaseController.switchScene((Stage) earlyLecturesButton.getScene().getWindow(), "display_schedule.fxml", client);
+            } catch (Exception e) {
+                System.out.println("Scene Switch Error: " + e.getMessage());
+                Client.showAlert("Scene Switch Error", e.getMessage());
+                e.printStackTrace();
+            }});
     }
 
     private void goToFrontPage() {

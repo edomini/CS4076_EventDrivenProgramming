@@ -46,6 +46,11 @@ public class Lecture {
         return lecTimeNum;
     }
 
+    public void setLecTimeNum(int lecTimeNum) {
+        this.lecTimeNum = lecTimeNum;
+        this.lecTime = times.get(lecTimeNum);
+    }
+
     public String getRoomNum(){
         return roomNum;
     }
