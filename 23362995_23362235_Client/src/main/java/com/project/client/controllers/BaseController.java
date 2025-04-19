@@ -39,11 +39,7 @@ public class BaseController {
             }
 
             Scene scene = new Scene(root, 1000, 700);
-
-            //oolean wasFullScreen = stage.isFullScreen();
             stage.setScene(scene);
-            //stage.setFullScreen(true);
-            //stage.hide();
             stage.show();
             
             BackgroundMusicController.getInstance().play();

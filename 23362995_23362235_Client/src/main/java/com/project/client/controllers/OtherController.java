@@ -3,13 +3,8 @@ package com.project.client.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import com.project.client.Client;
-
-import java.io.IOException;
 
 public class OtherController {
     private Client client;
@@ -40,74 +35,17 @@ public class OtherController {
             // then close the program successfully
             System.exit(0);
         });
-
-        /*
-        System.out.println("\nClient: " + message);
-
-        Task<String> task = new Task<>() {
-            @Override
-            protected String call() {
-                return Client.sendRequest(message); // run in background thread
-            }
-        };
-
-        // when task is completed, process server response
-        task.setOnSucceeded(event -> {
-            String[] response = task.getValue().split(":");
-            System.out.println("Server: " + response[1].trim());
-
-            // display response
-            Platform.runLater(() -> {
-                // show the alert and wait until the user dismisses it
-                Client.showAlert(response[0], response[1].trim());
-                // stop the music
-                BackgroundMusicController.getInstance().stop();
-                // then close the program successfully
-                System.exit(0);
-            });
-        });
-
-        task.setOnFailed(event -> Platform.runLater(() -> Client.showAlert("Error", "Failed to connect to server.")));
-
-        // start the background thread
-        new Thread(task).start();
-        */
     }
 
     @FXML
     private void handleOther(){
         String message = "OTHER";
         client.readResponse(message, null);
-
-        /*
-        System.out.println("\nClient: " + message);
-
-        Task<String> task = new Task<>() {
-            @Override
-            protected String call() {
-                return Client.sendRequest(message); // run in background thread
-            }
-        };
-
-        // when task is completed, process server response
-        task.setOnSucceeded(event -> {
-            String[] response = task.getValue().split(":");
-            System.out.println("Server: " + response[1].trim());
-
-            // display response
-            Platform.runLater(() -> Client.showAlert(response[0], response[1].trim()));
-        });
-
-        task.setOnFailed(event -> Platform.runLater(() -> Client.showAlert("Error", "Failed to connect to server.")));
-
-        // start the background thread
-        new Thread(task).start();
-        */
     }
 
     @FXML
     private void handleBack() {
-        goToFrontPage();
+        BaseController.switchScene((Stage) backButton.getScene().getWindow(), "front.fxml", client); //other ---> front
     }
 
     @FXML
@@ -122,20 +60,5 @@ public class OtherController {
                 Client.showAlert("Scene Switch Error", e.getMessage());
                 e.printStackTrace();
             }});
-    }
-
-    private void goToFrontPage() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/front.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = (Stage) backButton.getScene().getWindow();
-
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

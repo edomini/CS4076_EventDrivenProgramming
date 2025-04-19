@@ -4,7 +4,6 @@ import com.project.client.Client;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.application.Platform;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -37,21 +36,8 @@ public class LoginController {
             Client.showAlert("Error", "Failed to connect to server.");
             System.exit(1);
         } 
-        //else {
-            //start listening for GUI update requests from server
-          //  client.listenForUpdates();
-        //}
 
-        Platform.runLater(() -> BaseController.switchScene((Stage) loginButton.getScene().getWindow(), "front.fxml", client));//login ---> front
-
-        /*
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/front.fxml"));//login ---> front
-        Scene scene = new Scene(loader.load());
-
-        Stage stage = (Stage) loginButton.getScene().getWindow();
-        stage.setScene(scene);
-        stage.show();
-        */
+        BaseController.switchScene((Stage) loginButton.getScene().getWindow(), "front.fxml", client); //login ---> front
     }
 }
 

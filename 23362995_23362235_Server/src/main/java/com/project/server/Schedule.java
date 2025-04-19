@@ -145,11 +145,20 @@ public class Schedule {
         return "Success: Schedule cleared successfully.";
     }
 
-    public synchronized String earlyLectures(){
+    public synchronized String earlyLectures() throws IncorrectActionException {
+        //check if schedule is empty
+        if(moduleCount == 0){
+            throw new IncorrectActionException("Schedule empty. Cannot reschedule lectures.");
+        }
+
         //move lectures to earliest time slots
-        EarlyLectures.moveLectures(schedule);
+        boolean result = EarlyLectures.moveLectures(schedule);
 
         //System.out.println(displaySchedule());
-        return "Success: Lectures rescheduled where applicable.";
+        if (result){
+            return "Success: Lectures rescheduled where applicable.";
+        } else {
+            throw new IncorrectActionException("No changes available.");
+        }
     }
 }

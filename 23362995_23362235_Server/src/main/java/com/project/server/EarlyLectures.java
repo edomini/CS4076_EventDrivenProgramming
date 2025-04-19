@@ -1,10 +1,10 @@
 package com.project.server;
 
-import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.RecursiveTask;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EarlyLectures extends RecursiveAction {
+public class EarlyLectures extends RecursiveTask<Boolean> {
     private Lecture[][] schedule;
     private int col;
 
@@ -14,7 +14,9 @@ public class EarlyLectures extends RecursiveAction {
     }
 
     @Override
-    protected void compute() {
+    protected Boolean compute() {
+        // bool to indicate changes made
+        boolean changed = false;
         // make an array of free slots in the col
         ArrayList<Integer> freeSlots = new ArrayList<>();
         
@@ -36,17 +38,19 @@ public class EarlyLectures extends RecursiveAction {
 
                         schedule[firstFreeSlot][col] = schedule[row][col];
                         schedule[row][col] = null;
+
                         System.out.println("moved.");
+                        changed = true;
                     }
                     freeSlots.add(row); // add newly cleared slot to free slots
                 }
             }
         }
+        return changed;
     }
 
-    public static void moveLectures(Lecture[][] array) {
-        //return ForkJoinPool.commonPool().invoke(new EarlyLectures(array, col));
-
+    public static boolean moveLectures(Lecture[][] array) {
+        boolean changed = false;
         List<EarlyLectures> tasks = new ArrayList<>();
     
         for (int col = 0; col < array[0].length; col++) {
@@ -56,10 +60,15 @@ public class EarlyLectures extends RecursiveAction {
         }
 
         for (EarlyLectures task : tasks) {
-            task.join(); // Wait for each task to complete
+            boolean result = task.join(); // Wait for each task to complete
+
+            if(result){
+                changed = true; // if any task changed the schedule, set changed to true
+            }
         }
 
         System.out.println("All tasks completed.");
+        return changed;
     }
 
 }

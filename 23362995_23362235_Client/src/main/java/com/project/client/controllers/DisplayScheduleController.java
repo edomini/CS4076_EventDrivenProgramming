@@ -192,53 +192,8 @@ public class DisplayScheduleController {
         String message = "CLEAR";
 
         client.readResponse(message, () -> {
-            //populateEmptySchedule();
             fetchAndDisplaySchedule();
         });
-
-        //fetchAndDisplaySchedule();
-
-        /*
-        if(s.equals("S")){
-            System.out.println("Success");
-            populateEmptySchedule();
-            fetchAndDisplaySchedule();
-        }
-        */
-
-        /* 
-        System.out.println("\nClient: " + message);
-
-        Task<String> task = new Task<>() {
-            @Override
-            protected String call() {
-                return Client.sendRequest(message); // run in background thread
-            }
-        };
-
-        // when task is completed, process server response
-        task.setOnSucceeded(event -> {
-            String[] response = task.getValue().split(":");
-            System.out.println("Server: " + response[1].trim());
-
-            // display response
-            Platform.runLater(() -> {
-                // show the alert and wait until the user dismisses it
-                Client.showAlert(response[0], response[1].trim());
-                // make sure grid is cleared
-                populateEmptySchedule();
-                // update schedule with cleared cells
-                fetchAndDisplaySchedule();
-            });
-        });
-
-        task.setOnFailed(event -> {
-            Platform.runLater(() -> Client.showAlert("Error", "Failed to connect to server."));
-        });
-
-        // start the background thread
-        new Thread(task).start();
-        */
     }
 
     @FXML
@@ -299,37 +254,6 @@ public class DisplayScheduleController {
             //send info to server
             String message = "IMPORT," + formattedData;
             client.readResponse(message, this::fetchAndDisplaySchedule);
-
-            /*
-            System.out.println("\nClient: " + message);
-
-            Task<String> task = new Task<>() {
-                @Override
-                protected String call() {
-                    return Client.sendRequest(message); // run in background thread
-                }
-            };
-
-            // when task is completed, process server response
-            task.setOnSucceeded(event -> {
-                String[] response = task.getValue().split(":", 2);
-                System.out.println("Server: " + response[1].trim());
-
-                // display response
-                Platform.runLater(() -> {
-                    Client.showAlert(response[0], response[1].trim());
-                    //update schedule with imported data
-                    fetchAndDisplaySchedule();
-                });
-            });
-
-            task.setOnFailed(event -> {
-                Platform.runLater(() -> Client.showAlert("Error", "Failed to connect to server."));
-            });
-
-            // start the background thread
-            new Thread(task).start();
-            */
 
         } catch (IOException e) {
             Client.showAlert("File Read Error", "Error reading the CSV file.");
