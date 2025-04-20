@@ -8,14 +8,17 @@ import java.net.Socket;
 
 public class ClientHandler implements Runnable {
     private final Socket link;
+    private final Socket updateLink;
     private final Schedule schedule;
     private final int clientNumber;
     private String courseCode;
     private BufferedReader in;
     private PrintWriter out;
+    private PrintWriter updateOut;
 
-    public ClientHandler(Socket socket, Schedule schedule, int clientNumber, String courseCode) {
+    public ClientHandler(Socket socket, Socket updateSocket, Schedule schedule, int clientNumber, String courseCode) {
         this.link = socket;
+        this.updateLink = updateSocket;
         this.schedule = schedule;
         this.clientNumber = clientNumber;
         this.courseCode = courseCode;
@@ -29,6 +32,7 @@ public class ClientHandler implements Runnable {
         try {
             in = new BufferedReader((new InputStreamReader((link.getInputStream())))); //set up message receiver
             out = new PrintWriter(link.getOutputStream(), true); //set up message writer
+            updateOut = new PrintWriter(updateLink.getOutputStream(), true); //set up update writer
 
             String message = "";
             while((message = in.readLine().trim()) != null){
@@ -59,6 +63,8 @@ public class ClientHandler implements Runnable {
         //remove action from message
         String[] str = message.split(",", 2);
         String action = str[0].toUpperCase();
+
+        //check if other client GUIs need to be updated
         boolean mod = false;
 
         try {
@@ -100,19 +106,19 @@ public class ClientHandler implements Runnable {
         } catch (IncorrectActionException ex) {
             return "Incorrect Action: " + ex.getMessage();
         } 
-        //finally {
-            // send message "UPDATE" to all clients w same course code
-            //if(mod) {
-                //broadcast("UPDATE");
-            //}
-        //}
-
+        finally {
+            //send message "UPDATE" to all clients w same course code
+            if(mod) {
+                broadcast("UPDATE");
+            }
+            mod = false;
+        }
     }
 
     public void broadcast(String message) {
         for (ClientHandler client : schedule.getClients()) {
             if (client != this) { // don't send to self
-                client.out.println(message);
+                client.updateOut.println(message);
             }
         }
     }

@@ -15,7 +15,7 @@ public class EarlyLectures extends RecursiveTask<Boolean> {
 
     @Override
     protected Boolean compute() {
-        // bool to indicate changes made
+        // indicate whether any changes were made
         boolean changed = false;
         // make an array of free slots in the col
         ArrayList<Integer> freeSlots = new ArrayList<>();
@@ -24,22 +24,17 @@ public class EarlyLectures extends RecursiveTask<Boolean> {
             // if slot is free, add to list
             if (schedule[row][col] == null) {
                 freeSlots.add(row);
-                System.out.println("Free slot at " + row + ", " + col);
             } else {
                 // if slot is taken, check if there are free slots before
                 if (!freeSlots.isEmpty()) {
                     // move to first free slot
                     int firstFreeSlot = freeSlots.remove(0);
                     synchronized (schedule) {
-                        System.out.println("Moving lecture from row " + row + " to row " + firstFreeSlot + " in column " + col);
-
                         //update the time of the lecture
                         schedule[row][col].setLecTimeNum(firstFreeSlot);
-
+                        // update the schedule array
                         schedule[firstFreeSlot][col] = schedule[row][col];
                         schedule[row][col] = null;
-
-                        System.out.println("moved.");
                         changed = true;
                     }
                     freeSlots.add(row); // add newly cleared slot to free slots
@@ -55,20 +50,17 @@ public class EarlyLectures extends RecursiveTask<Boolean> {
     
         for (int col = 0; col < array[0].length; col++) {
             EarlyLectures task = new EarlyLectures(array, col);
-            task.fork(); // Launch task in parallel
+            task.fork(); // launch task in parallel
             tasks.add(task);
         }
 
         for (EarlyLectures task : tasks) {
-            boolean result = task.join(); // Wait for each task to complete
+            boolean result = task.join(); // wait for each task to complete
 
             if(result){
                 changed = true; // if any task changed the schedule, set changed to true
             }
         }
-
-        System.out.println("All tasks completed.");
         return changed;
     }
-
 }

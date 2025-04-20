@@ -23,9 +23,9 @@ public class DisplayScheduleController {
     public static final List<String> days = List.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday");
     public static final List<String> times = List.of("09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00");
 
-    //private static DisplayScheduleController instance;
     private Client client;
     private String courseCode;
+    private static DisplayScheduleController instance;
 
     @FXML
     private GridPane scheduleGrid;
@@ -60,16 +60,17 @@ public class DisplayScheduleController {
         
         // set the title with course code
         timetableLabel.setText(courseCode + " Timetable");
+
+        instance = this; // set the instance to this controller
+        client.setViewingDisplaySchedule(true);
     }
 
-    //public static DisplayScheduleController getInstance() {
-        //return instance; // return the instance of this controller
-    //}
+    public static DisplayScheduleController getInstance() {
+        return instance; // return the instance of this controller
+    }
 
     @FXML
     public void initialize() {
-        //instance = this; // set the instance to this controller
-
         // 'Time' title label (0th col, 0th row)
         Label timeTitle = new Label("Time");
         timeTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
@@ -96,7 +97,6 @@ public class DisplayScheduleController {
     }
 
     public synchronized void fetchAndDisplaySchedule() {
-        System.out.println("fetchAndDisplaySchedule() called");
         new Thread(() -> {
             //send request to server
             System.out.println("\nClient: DISPLAY");
@@ -113,9 +113,7 @@ public class DisplayScheduleController {
         }).start(); //start the thread
     }
 
-    private synchronized void updateScheduleGrid(String response) {
-        System.out.println("updateScheduleGrid() called");
-        
+    private synchronized void updateScheduleGrid(String response) {        
         Platform.runLater(() -> {
             //clear the grid pane before populating it with new data
             populateEmptySchedule();
@@ -155,12 +153,9 @@ public class DisplayScheduleController {
                 });
             }
         }
-
-        System.out.println("updateScheduleGrid() completed");
     }
 
     private synchronized void populateEmptySchedule() {
-        System.out.println("populateEmptySchedule() called");
         // remove all the lecture slot labels, but keep the day names and times
         scheduleGrid.getChildren().removeIf(node -> {
             Integer colIndex = GridPane.getColumnIndex(node);
@@ -178,12 +173,11 @@ public class DisplayScheduleController {
                 scheduleGrid.add(emptyCell, col, row);
             }
         }
-
-        System.out.println("populateEmptySchedule() completed");
     }
 
     @FXML
     private void handleBackAction() {
+        client.setViewingDisplaySchedule(false);
         BaseController.switchScene((Stage) backButton.getScene().getWindow(), "front.fxml", client);//schedule ---> front
     }
 

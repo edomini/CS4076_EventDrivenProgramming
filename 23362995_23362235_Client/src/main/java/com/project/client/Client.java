@@ -3,18 +3,20 @@ package com.project.client;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
-
+import com.project.client.controllers.DisplayScheduleController;
 import java.io.*;
 import java.net.Socket;
 
 public class Client {
     private Socket socket;
+    private Socket updateSocket;
     private BufferedReader in;
+    private BufferedReader updateIn;
     private PrintWriter out;
     private String courseCode;
     private static final String SERVER_ADDRESS = "localhost";
     private static final int SERVER_PORT = 1234;
-    private boolean ignoreNextUpdate = false;
+    private boolean isViewingDisplaySchedule = false;
 
     public boolean connect(String code) {
         try {
@@ -22,11 +24,15 @@ public class Client {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
 
+            //create a new socket for updates
+            updateSocket = new Socket(SERVER_ADDRESS, SERVER_PORT + 1);
+            updateIn = new BufferedReader(new InputStreamReader(updateSocket.getInputStream()));
+
             //send course code to server
             this.courseCode = code;
             out.println("courseCode:" + courseCode); //send course code to server
 
-            //listenForUpdates();
+            listenForUpdates();
 
             return true;
         } catch (IOException ex) {
@@ -34,16 +40,15 @@ public class Client {
         }
     }
 
-    public String getCourseCode() {
-        return courseCode;
+    public boolean isViewingDisplaySchedule() {
+        return isViewingDisplaySchedule;
+    }
+    public void setViewingDisplaySchedule(boolean vDS) {
+        isViewingDisplaySchedule = vDS;
     }
 
-    public void disconnect(){
-        try {
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public String getCourseCode() {
+        return courseCode;
     }
 
     public synchronized String sendRequest(String request) {
@@ -51,13 +56,8 @@ public class Client {
             //send request to server
             out.println(request);
 
-            // set flag to ignore next update
-            if(request.contains("ADD") || request.contains("REMOVE") || request.contains("CLEAR")){
-                ignoreNextUpdate = true;
-            }
-
             //read response from server
-            String response = in.readLine();
+            String response = in.readLine();;
 
             //return response as a string
             return response.trim();
@@ -69,7 +69,6 @@ public class Client {
     }
 
     public synchronized void readResponse(String message, Runnable callback) {
-        //String ans = "";
         System.out.println("\nClient: " + message);
 
         Task<String> task = new Task<>() {
@@ -82,7 +81,6 @@ public class Client {
         // when task is completed, process server response
         task.setOnSucceeded(event -> {
             String[] response = task.getValue().split(":");
-            System.out.println("Server: " + task.getValue());
             System.out.println("Server: " + response[1].trim());
 
             // display response
@@ -104,36 +102,33 @@ public class Client {
         new Thread(task).start();
     }
 
-    /*
     //make sure the GUI updates when changes are made to shared schedule
     public void listenForUpdates() {
         new Thread(() -> {
             try {
-                String message;
-                while ((message = in.readLine()) != null) {
+                do {
+                    String message = updateIn.readLine(); //wait for update from server
+                    
                     if(message.equals("UPDATE")){
-                        if(ignoreNextUpdate){
-                            ignoreNextUpdate = false; // reset flag
-                            continue; // ignore this update
-                        }
-
-                        //trigger fetchAndDisplaySchedule()
                         Platform.runLater(() -> {
-                            DisplayScheduleController controller = DisplayScheduleController.getInstance();
-                            if (controller != null) {
-                                controller.fetchAndDisplaySchedule();
+                            // if client is viewing schedule
+                            if (isViewingDisplaySchedule()) {
+                                DisplayScheduleController controller = DisplayScheduleController.getInstance();
+                                if (controller != null) {
+                                    // refresh the GUI
+                                    controller.fetchAndDisplaySchedule();
+                                }
                             }
                         });
                     }
-                }
+                } while (true);
+                
             } catch (IOException e) {
                 e.printStackTrace();
                 showAlert("Error", "Cannot update schedule.");
             }
         }).start();
     }
-    */
-
 
     //show alerts for actions or errors
     public static void showAlert(String title, String message) {
