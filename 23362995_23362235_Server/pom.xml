@@ -22,6 +22,13 @@
             <version>23</version>
         </dependency>
         
+        <!-- JavaFX Graphics Dependency -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>23</version>
+        </dependency>
+        
         <!-- JavaFX FXML Dependency -->
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -56,13 +63,7 @@
                 <version>0.0.8</version>
                 <configuration>
                     <!-- Main class for JavaFX application -->
-                    <mainClass>com.project.server.Server</mainClass>
-                    <!-- Modules to include for JavaFX -->
-                    <modules>
-                        <module>javafx.controls</module>
-                        <module>javafx.fxml</module>
-                        <module>javafx.media</module> <!-- Adding the javafx.media module here -->
-                    </modules>
+                    <mainClass>com.project.server/com.project.server.Main</mainClass>
                 </configuration>
                 <executions>
                     <!-- Execution for running the application -->

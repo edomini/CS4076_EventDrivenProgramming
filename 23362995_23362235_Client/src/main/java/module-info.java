@@ -5,5 +5,6 @@ module com.project.client {
     requires javafx.media;
 
     opens com.project.client.controllers to javafx.fxml;
+    opens com.project.client to javafx.fxml;
     exports com.project.client;
 }
