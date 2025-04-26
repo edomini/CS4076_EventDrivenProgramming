@@ -17,18 +17,20 @@
         </effect>
 
         <!-- Course Code Label -->
-        <Label text="Enter Course Code:" style="-fx-font-size: 18px;"/>
+        <Label fx:id="courseCodeLabel" text="Enter Course Code:" 
+               style="-fx-font-family: 'Imbue'; -fx-font-size: 18px;" />
 
         <!-- Course Code TextField -->
-        <TextField fx:id="courseCodeField" promptText="Enter Course Code" style="-fx-font-size: 14px; -fx-padding: 5px; -fx-background-color: #D9D9D9; -fx-background-radius: 95px;" maxWidth="160"/>
+        <TextField fx:id="courseCodeField" promptText="Enter Course Code" 
+                  style="-fx-font-family: 'Imbue'; -fx-font-size: 14px; 
+                         -fx-padding: 5px; -fx-background-color: #D9D9D9; 
+                         -fx-background-radius: 95px;" maxWidth="160"/>
 
         <!-- Login Button -->
         <Button fx:id="loginButton" text="Login" onAction="#onLoginButtonClick"
-                style="-fx-font-size: 14px;  -fx-background-color: #D9D9D9; -fx-text-fill: black;
+                style="-fx-font-family: 'Imbue'; -fx-font-size: 14px;  
+                       -fx-background-color: #D9D9D9; -fx-text-fill: black;
                        -fx-padding: 5px; -fx-background-radius: 95px;"
                 maxWidth="160" prefHeight="50"/>
     </VBox>
 </StackPane>
-
-
-

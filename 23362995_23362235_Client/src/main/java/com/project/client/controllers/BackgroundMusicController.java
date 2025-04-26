@@ -1,8 +1,9 @@
 package com.project.client.controllers;
 
+import java.net.URL;
+
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import java.net.URL;
 
 public class BackgroundMusicController {
     private static BackgroundMusicController instance;
@@ -32,4 +33,5 @@ public class BackgroundMusicController {
         mediaPlayer.stop();
     }
 }
+
 

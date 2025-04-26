@@ -61,4 +61,27 @@ public class OtherController {
                 e.printStackTrace();
             }});
     }
+
+    //MEANT TO SEND MESSAGE TO SERVER
+    @FXML
+    private void handleShowServerSchedule() {
+        String message = String.format("SERVER_SCHEDULE," + client.getCourseCode());
+
+        client.readResponse(message, null);
+
+        /*
+        try {
+            String javafxPath = "C:\\Program Files\\javafx-sdk-23.0.2\\lib";
+            String command = String.format(
+                "java --module-path \"%s\" --add-modules javafx.controls,javafx.fxml -jar libs/server_gui.jar",
+                javafxPath
+            );
+            Process process = Runtime.getRuntime().exec(command);
+            System.out.println("Server GUI launched with JavaFX modules.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        */
+    }
 }
+

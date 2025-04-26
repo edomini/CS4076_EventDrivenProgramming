@@ -2,6 +2,10 @@ package com.project.server;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import javafx.application.Platform;
+
+import controllers.BaseController;
+import controllers.ServerDisplayScheduleController;
 
 public class Schedule {
     private final Lecture[][] schedule; //schedule array for display
@@ -19,6 +23,10 @@ public class Schedule {
         for (Lecture[] row : schedule) {
             Arrays.fill(row, null); //initialise to null
         }
+    }
+
+    public Lecture[][] getSchedule() {
+        return schedule;
     }
 
     public synchronized void addClient(ClientHandler client) {
@@ -70,7 +78,6 @@ public class Schedule {
                 throw new IncorrectActionException("Time slot taken. Cannot add this lecture to the schedule.");
             }
         }
-
         return response;
     }
 
@@ -108,7 +115,6 @@ public class Schedule {
             //if it doesn't exist, send error message
             throw new IncorrectActionException("This lecture does not exist. Cannot remove from schedule.");
         }
-
         return response;
     }
 
@@ -131,6 +137,42 @@ public class Schedule {
         return response.toString();
     }
 
+    public synchronized String importSchedule(String scheduleString) {
+        //parse the string into lectures
+        String[] importedEntries = scheduleString.split(";");
+
+        for (String entry : importedEntries) {
+            //split each module into parts and add them to the schedule if possible
+            String[] parts = entry.split(",");
+            Lecture lec = new Lecture(parts[0], parts[1], parts[2], parts[3]);
+            try {
+                addLecture(lec);
+            } catch (IncorrectActionException e) {
+                return e.getMessage();
+            }
+        }
+        
+        broadcast("UPDATE");
+        return "Success: Schedule imported successfully.";
+    }
+
+    public synchronized String displayServerSchedule(String courseCode) {
+        //CALL DISPLAY METHOD IN SCHEDULE DISPLAY CONTROLLER
+        Schedule s = Server.database.get(courseCode);
+        
+        Platform.runLater(() -> {
+            if(ServerMonitor.viewingMonitor()){
+                ServerMonitor.setViewingMonitor(false);
+                BaseController.switchScene(ServerMonitor.getStage(), "server_display_schedule.fxml", s);
+            } else {
+                ServerDisplayScheduleController controller = ServerDisplayScheduleController.getInstance();
+                controller.setSchedule(s);
+            }
+        });
+
+        return String.format("Success: %s schedule displaying on server.", courseCode);
+    }
+
     public synchronized String clearSchedule(){
         //reset module list and counter so a new 5 modules can be added
         modules.clear();
@@ -140,6 +182,8 @@ public class Schedule {
         for (Lecture[] row : schedule) {
             Arrays.fill(row, null); //reset to null
         }
+
+        broadcast("UPDATE");
 
         //set message for client
         return "Success: Schedule cleared successfully.";
@@ -154,11 +198,23 @@ public class Schedule {
         //move lectures to earliest time slots
         boolean result = EarlyLectures.moveLectures(schedule);
 
-        //System.out.println(displaySchedule());
         if (result){
             return "Success: Lectures rescheduled where applicable.";
         } else {
             throw new IncorrectActionException("No changes available.");
+        }
+    }
+
+    // send update message to both client and server GUIs
+    public void broadcast(String message) {
+        for (ClientHandler client : getClients()) {
+            client.updateOut.println(message);
+        }
+
+        ServerDisplayScheduleController controller = ServerDisplayScheduleController.getInstance();
+        if (controller != null) {
+            // refresh the GUI
+            controller.fetchAndDisplaySchedule();
         }
     }
 }

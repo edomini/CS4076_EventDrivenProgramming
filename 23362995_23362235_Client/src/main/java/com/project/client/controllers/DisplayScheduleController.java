@@ -296,7 +296,6 @@ public class DisplayScheduleController {
 
         // show save dialog
         File file = fileChooser.showSaveDialog(new Stage());
-        //File file = fileChooser.showSaveDialog(scheduleGrid.getScene().getWindow());
 
         //if valid file is chosen:
         if (file != null) {

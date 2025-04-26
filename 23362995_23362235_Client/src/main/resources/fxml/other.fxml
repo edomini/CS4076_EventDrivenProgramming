@@ -17,15 +17,23 @@
 
         <!-- Other Button -->
         <Button fx:id="otherButton" text="Other" onAction="#handleOther"
-                style="-fx-font-size: 14px; -fx-padding: 5px; -fx-background-radius: 95px;" prefWidth="140" prefHeight="50"/>
+                style="-fx-font-size: 14px; -fx-background-color: #D9D9D9; -fx-text-fill: black; 
+                    -fx-padding: 5px; -fx-background-radius: 95px;" prefWidth="140" prefHeight="50"/>
 
         <!-- Stop Program -->
         <Button fx:id="stopButton" text="Stop" onAction="#handleStop"
-                style="-fx-font-size: 14px; -fx-padding: 5px; -fx-background-radius: 95px;" prefWidth="140" prefHeight="50"/>
+                 style="-fx-font-size: 14px; -fx-background-color: #D9D9D9; -fx-text-fill: black; 
+                    -fx-padding: 5px; -fx-background-radius: 95px;" prefWidth="140" prefHeight="50"/>
 
         <!-- Move to Early Lectures Button -->
         <Button fx:id="earlyLecturesButton" text="Early Lectures" onAction="#handleEarlyLectures"
-                style="-fx-font-size: 14px; -fx-padding: 5px; -fx-background-radius: 95px;" prefWidth="140" prefHeight="50"/>
+                style="-fx-font-size: 14px; -fx-background-color: #D9D9D9; -fx-text-fill: black; 
+                    -fx-padding: 5px; -fx-background-radius: 95px;" prefWidth="140" prefHeight="50"/>
+
+        <!-- View Server Button -->
+        <Button fx:id="showServerScheduleButton" text="View on Server" onAction="#handleShowServerSchedule"
+                style="-fx-font-size: 14px; -fx-background-color: #D9D9D9; -fx-text-fill: black; 
+                -fx-padding: 5px; -fx-background-radius: 95px;" prefWidth="140" prefHeight="50"/>
 
         <!-- Back Button -->
         <Button fx:id="backButton" text="Back" onAction="#handleBack"

@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import controllers.ServerDisplayScheduleController;
+import javafx.scene.control.Alert;
+
 public class ClientHandler implements Runnable {
     private final Socket link;
     private final Socket updateLink;
@@ -14,7 +17,7 @@ public class ClientHandler implements Runnable {
     private String courseCode;
     private BufferedReader in;
     private PrintWriter out;
-    private PrintWriter updateOut;
+    protected PrintWriter updateOut;
 
     public ClientHandler(Socket socket, Socket updateSocket, Schedule schedule, int clientNumber, String courseCode) {
         this.link = socket;
@@ -25,6 +28,9 @@ public class ClientHandler implements Runnable {
 
         //add client to schedule
         schedule.addClient(this);
+
+        //add client to monitor
+        ServerMonitor.addClient(this.toString()); 
     }
 
     @Override
@@ -36,7 +42,7 @@ public class ClientHandler implements Runnable {
 
             String message = "";
             while((message = in.readLine().trim()) != null){
-                System.out.println("\nClient " + this.toString() + ": " + message);
+                System.out.println("\n" + this.toString() + ": " + message);
 
                 String response = processRequest(message);
                 out.println(response);
@@ -54,6 +60,10 @@ public class ClientHandler implements Runnable {
                 Server.offset++;
             }
             schedule.removeClient(this);
+
+
+            ServerMonitor.removeClient(this.toString()); // Track disconnection
+
         } catch (IOException ex) {
             System.out.println("Connection error: " + ex.getMessage());
         }
@@ -72,32 +82,33 @@ public class ClientHandler implements Runnable {
                 case "ADD":
                     String[] addParts = str[1].split(",");
                     Lecture addLec = new Lecture(addParts[0], addParts[1], addParts[2], addParts[3]);
+                    
                     mod = true;
+                    ServerMonitor.log(this.toString() + " added a lecture: " + str[1]);
                     return schedule.addLecture(addLec);
                 case "REMOVE":
                     String[] remParts = str[1].split(",");
                     Lecture remLec = new Lecture(remParts[0], remParts[1], remParts[2], remParts[3]);
+                    
                     mod = true;
+                    ServerMonitor.log(this.toString() + " removed a lecture: " + str[1]);
                     return schedule.removeLecture(remLec);
                 case "DISPLAY":
+                    ServerMonitor.log(this.toString() + " viewed the schedule.");
                     return schedule.displaySchedule();
                 case "IMPORT":
-                    String[] importedEntries = str[1].split(";");
-
-                    for (String entry : importedEntries) {
-                        //split each module into parts and add them to the schedule if possible
-                        String[] parts = entry.split(",");
-                        Lecture lec = new Lecture(parts[0], parts[1], parts[2], parts[3]);
-                        schedule.addLecture(lec);
-                    }
-                    mod = true;
-                    return "Success: Schedule imported successfully.";
+                    ServerMonitor.log(this.toString() + " imported a schedule.");
+                    return schedule.importSchedule(str[1]);
                 case "CLEAR":
-                    mod = true;
+                    ServerMonitor.log(this.toString() + " cleared the schedule.");
                     return schedule.clearSchedule();
                 case "EARLY":
                     mod = true;
+                    ServerMonitor.log(this.toString() + " requested early lectures adjustment.");
                     return schedule.earlyLectures();
+                case "SERVER_SCHEDULE":
+                    ServerMonitor.log(this.toString() + " requested server schedule.");
+                    return schedule.displayServerSchedule(str[1]);
                 case "STOP":
                     return "TERMINATE: Closing connection...";
                 default:
@@ -105,8 +116,7 @@ public class ClientHandler implements Runnable {
             }
         } catch (IncorrectActionException ex) {
             return "Incorrect Action: " + ex.getMessage();
-        } 
-        finally {
+        } finally {
             //send message "UPDATE" to all clients w same course code
             if(mod) {
                 broadcast("UPDATE");
@@ -115,16 +125,37 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    // send update message to both client and server GUIs
     public void broadcast(String message) {
         for (ClientHandler client : schedule.getClients()) {
             if (client != this) { // don't send to self
                 client.updateOut.println(message);
             }
         }
+
+        ServerDisplayScheduleController controller = ServerDisplayScheduleController.getInstance();
+        if (controller != null) {
+            // refresh the GUI
+            controller.fetchAndDisplaySchedule();
+        }
     }
 
     @Override
     public String toString() {
-        return clientNumber + " (" + courseCode + ")";
+        return "Client " + clientNumber + " (" + courseCode + ")";
+    }
+
+    //show alerts for actions or errors
+    public static void showAlert(String title, String message) {
+        Alert alert;
+        if (title.equals("Success") || title.equals("Message")) {
+            alert = new Alert(Alert.AlertType.INFORMATION);
+        } else {
+            alert = new Alert(Alert.AlertType.ERROR);
+        }
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

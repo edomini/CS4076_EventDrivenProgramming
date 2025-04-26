@@ -64,28 +64,6 @@ public class EarlyLectures extends RecursiveTask<Boolean> {
     }
 
     public static boolean moveLectures(Lecture[][] array) {
-        /*
-        boolean changed = false;
-        List<EarlyLectures> tasks = new ArrayList<>();
-    
-        for (int col = 0; col < array[0].length; col++) {
-            EarlyLectures task = new EarlyLectures(array, col);
-            task.fork(); // launch task in parallel
-            tasks.add(task);
-        }
-
-        for (EarlyLectures task : tasks) {
-            boolean result = task.join(); // wait for each task to complete
-
-            if(result){
-                changed = true; // if any task changed the schedule, set changed to true
-            }
-        }
-        return changed;
-        */
-
-        //return ForkJoinPool.commonPool().invoke(new EarlyLectures(array, 0, array[0].length));
-
         ForkJoinPool fivePool = new ForkJoinPool(array[0].length); // 1 thread per column
         try {
             return fivePool.invoke(new EarlyLectures(array, 0, array[0].length));

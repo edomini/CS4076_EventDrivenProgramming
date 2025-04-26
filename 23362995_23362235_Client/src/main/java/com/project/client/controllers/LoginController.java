@@ -40,4 +40,3 @@ public class LoginController {
         BaseController.switchScene((Stage) loginButton.getScene().getWindow(), "front.fxml", client); //login ---> front
     }
 }
-
