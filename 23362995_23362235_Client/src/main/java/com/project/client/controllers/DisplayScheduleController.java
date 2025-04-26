@@ -113,16 +113,14 @@ public class DisplayScheduleController {
         }).start(); //start the thread
     }
 
-    private synchronized void updateScheduleGrid(String response) {        
-        Platform.runLater(() -> {
-            //clear the grid pane before populating it with new data
-            populateEmptySchedule();
+    private synchronized void updateScheduleGrid(String response) {
+        //clear the grid pane before populating it with new data
+        populateEmptySchedule();
 
-            //if schedule is empty, end here
-            if (response == null || response.isEmpty() || response.equals("Schedule empty.")) {
-                return;
-            }
-        });
+        //if schedule is empty, end here
+        if (response == null || response.isEmpty() || response.equals("Schedule empty.")) {
+            return;
+        }
 
         //split string of schedule array from server
         String[] scheduleData = response.split(";");
@@ -156,23 +154,25 @@ public class DisplayScheduleController {
     }
 
     private synchronized void populateEmptySchedule() {
-        // remove all the lecture slot labels, but keep the day names and times
-        scheduleGrid.getChildren().removeIf(node -> {
-            Integer colIndex = GridPane.getColumnIndex(node);
-            Integer rowIndex = GridPane.getRowIndex(node);
+        Platform.runLater(() -> {
+            // remove all the lecture slot labels, but keep the day names and times
+            scheduleGrid.getChildren().removeIf(node -> {
+                Integer colIndex = GridPane.getColumnIndex(node);
+                Integer rowIndex = GridPane.getRowIndex(node);
 
-            // Remove only the cells that are not part of the header (days/times)
-            return colIndex != null && rowIndex != null && colIndex > 0 && rowIndex > 0;
-        });
+                // Remove only the cells that are not part of the header (days/times)
+                return colIndex != null && rowIndex != null && colIndex > 0 && rowIndex > 0;
+            });
 
-        for (int row = 1; row <= timeSlots.length; row++) {
-            for (int col = 1; col <= 5; col++) {
-                Label emptyCell = new Label("");
-                emptyCell.setMinSize(150, 40); // Size logic for consistency
-                emptyCell.setStyle("-fx-border-color: black; -fx-background-color: white;");
-                scheduleGrid.add(emptyCell, col, row);
+            for (int row = 1; row <= timeSlots.length; row++) {
+                for (int col = 1; col <= 5; col++) {
+                    Label emptyCell = new Label("");
+                    emptyCell.setMinSize(150, 40); // Size logic for consistency
+                    emptyCell.setStyle("-fx-border-color: black; -fx-background-color: white;");
+                    scheduleGrid.add(emptyCell, col, row);
+                }
             }
-        }
+        });
     }
 
     @FXML

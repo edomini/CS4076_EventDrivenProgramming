@@ -111,7 +111,7 @@ public class Schedule {
                 moduleCount--;
             }
             //send message back
-            response = String.format("Success: Lecture removed successfully.\nDay: %s, Time: %s, Room: %s", lec.getDay(), lec.getLecTime(), lec.getRoomNum());
+            response = String.format("Success: Lecture removed successfully. Day: %s, Time: %s, Room: %s", lec.getDay(), lec.getLecTime(), lec.getRoomNum());
         } else {
             //if it doesn't exist, send error message
             throw new IncorrectActionException("This lecture does not exist. Cannot remove from schedule.");

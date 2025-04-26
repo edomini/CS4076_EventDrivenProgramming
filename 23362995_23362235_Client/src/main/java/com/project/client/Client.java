@@ -57,7 +57,7 @@ public class Client {
             out.println(request);
 
             //read response from server
-            String response = in.readLine();;
+            String response = in.readLine();
 
             //return response as a string
             return response.trim();
@@ -80,7 +80,12 @@ public class Client {
 
         // when task is completed, process server response
         task.setOnSucceeded(event -> {
-            String[] response = task.getValue().split(":");
+            String response[];
+            if(message.contains("REMOVE")){
+                response = task.getValue().split(":", 2);
+            } else {
+                response = task.getValue().split(":");
+            }
             System.out.println("Server: " + response[1].trim());
 
             // display response

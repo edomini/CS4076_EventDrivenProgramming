@@ -119,14 +119,16 @@ public class ClientHandler implements Runnable {
             if(mod) {
                 broadcast("UPDATE");
             }
-            mod = false;
+            //mod = false;
         }
     }
 
     // send update message to both client and server GUIs
     public void broadcast(String message) {
         for (ClientHandler client : schedule.getClients()) {
-            client.updateOut.println(message);
+            if (!client.equals(this)) {
+                client.updateOut.println(message);
+            }
         }
 
         ServerDisplayScheduleController controller = ServerDisplayScheduleController.getInstance();
