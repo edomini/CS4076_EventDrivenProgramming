@@ -1,50 +1,70 @@
 package com.project.server;
 
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 import java.util.ArrayList;
-import java.util.List;
 
 public class EarlyLectures extends RecursiveTask<Boolean> {
     private Lecture[][] schedule;
-    private int col;
+    private int startCol;
+    private int endCol;
 
-    public EarlyLectures(Lecture[][] sch, int col) {
+    public EarlyLectures(Lecture[][] sch, int startCol, int endCol) {
         this.schedule = sch;
-        this.col = col;
+        this.startCol = startCol;
+        this.endCol = endCol;
     }
 
     @Override
     protected Boolean compute() {
         // indicate whether any changes were made
         boolean changed = false;
-        // make an array of free slots in the col
-        ArrayList<Integer> freeSlots = new ArrayList<>();
-        
-        for (int row = 0; row < schedule.length; row++) {
-            // if slot is free, add to list
-            if (schedule[row][col] == null) {
-                freeSlots.add(row);
-            } else {
-                // if slot is taken, check if there are free slots before
-                if (!freeSlots.isEmpty()) {
-                    // move to first free slot
-                    int firstFreeSlot = freeSlots.remove(0);
-                    synchronized (schedule) {
-                        //update the time of the lecture
-                        schedule[row][col].setLecTimeNum(firstFreeSlot);
-                        // update the schedule array
-                        schedule[firstFreeSlot][col] = schedule[row][col];
-                        schedule[row][col] = null;
-                        changed = true;
+
+        // implement rescursion
+        if(endCol - startCol == 1) {
+            // make an array of free slots in the col
+            ArrayList<Integer> freeSlots = new ArrayList<>();
+            
+            for (int row = 0; row < schedule.length; row++) {
+                // if slot is free, add to list
+                if (schedule[row][startCol] == null) {
+                    freeSlots.add(row);
+                } else {
+                    // if slot is taken, check if there are free slots before
+                    if (!freeSlots.isEmpty()) {
+                        // move to first free slot
+                        int firstFreeSlot = freeSlots.remove(0);
+                        synchronized (schedule) {
+                            //update the time of the lecture
+                            schedule[row][startCol].setLecTimeNum(firstFreeSlot);
+                            // update the schedule array
+                            schedule[firstFreeSlot][startCol] = schedule[row][startCol];
+                            schedule[row][startCol] = null;
+                            changed = true;
+                        }
+                        freeSlots.add(row); // add newly cleared slot to free slots
                     }
-                    freeSlots.add(row); // add newly cleared slot to free slots
                 }
             }
+        } else {
+            // split the task into two subtasks
+            int midCol = (startCol + endCol) / 2;
+            EarlyLectures leftTask = new EarlyLectures(schedule, startCol, midCol);
+            EarlyLectures rightTask = new EarlyLectures(schedule, midCol, endCol);
+
+            // fork the subtasks
+            leftTask.fork();
+            boolean rightResult = rightTask.compute(); // compute right task directly (current thread)
+            boolean leftResult = leftTask.join(); // join left task (from new thread)
+
+            changed = leftResult || rightResult; // combine results
         }
+
         return changed;
     }
 
     public static boolean moveLectures(Lecture[][] array) {
+        /*
         boolean changed = false;
         List<EarlyLectures> tasks = new ArrayList<>();
     
@@ -62,5 +82,15 @@ public class EarlyLectures extends RecursiveTask<Boolean> {
             }
         }
         return changed;
+        */
+
+        //return ForkJoinPool.commonPool().invoke(new EarlyLectures(array, 0, array[0].length));
+
+        ForkJoinPool fivePool = new ForkJoinPool(array[0].length); // 1 thread per column
+        try {
+            return fivePool.invoke(new EarlyLectures(array, 0, array[0].length));
+        } finally {
+            fivePool.shutdown(); // ensure the pool is properly closed
+        }
     }
 }
