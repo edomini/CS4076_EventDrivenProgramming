@@ -1,4 +1,5 @@
 package controllers;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,11 +13,9 @@ import java.util.List;
 import com.project.server.Schedule;
 import com.project.server.Lecture;
 import com.project.server.Server;
-import com.project.server.ServerMonitor;
 import com.project.server.ClientHandler;
 
 import java.util.concurrent.ConcurrentHashMap;
-
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -38,6 +37,7 @@ public class ServerDisplayScheduleController {
     private static ServerDisplayScheduleController instance;
     public static final List<String> days = List.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday");
     public static final List<String> times = List.of("09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00");
+    // individual client/course details
     private Schedule schedule;
     private Lecture[][] scheduleArray;
     private String courseCode;
@@ -68,13 +68,15 @@ public class ServerDisplayScheduleController {
             "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00", "17:00 - 18:00"
     };
 
-    // Setter for schedule
+    // initialise schedule to display
     public void setSchedule(Schedule schedule) {
-        //MAKE SURE TO SEND SCHEDULE TO CONTROLLER
         instance = this;
         this.schedule = schedule;
+
+        // create an array version of the schedule
         this.scheduleArray = schedule.getSchedule();
 
+        // retrieve course code, if not found set to "Error"
         courseCode = "Error";
         for(ConcurrentHashMap.Entry<String, Schedule> entry : Server.database.entrySet()) {
             if (schedule.equals(entry.getValue())) {
@@ -83,26 +85,29 @@ public class ServerDisplayScheduleController {
             }
         }
 
+        // set timetable label and refresh schedule
         timetableLabel.setText(courseCode + " Timetable");
         fetchAndDisplaySchedule();
     }
 
+    // to allow for refresh
     public static ServerDisplayScheduleController getInstance() {
         return instance;
     }
 
     @FXML
     public void initialize() {
+        // 'Time' title label (0th col, 0th row)
         Label timeTitle = new Label("Time");
         timeTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         scheduleGrid.add(timeTitle, 0, 0);
-        GridPane.setHalignment(timeTitle, HPos.CENTER); // Center it over the time labels
+        GridPane.setHalignment(timeTitle, HPos.CENTER); // center it over the time labels
 
         // time column (first column)
         for (int i = 0; i < timeSlots.length; i++) {
             Label timeLabel = new Label(timeSlots[i]);
             timeLabel.setStyle("-fx-font-size: 14px;");
-            scheduleGrid.add(timeLabel, 0, i + 1);
+            scheduleGrid.add(timeLabel, 0, i + 1); // column 0, row i+1
             GridPane.setHalignment(timeLabel, HPos.CENTER);
         }
 
@@ -110,20 +115,24 @@ public class ServerDisplayScheduleController {
         for (int j = 1; j <= days.size(); j++) {
             Label dayLabel = new Label(days.get(j - 1));
             dayLabel.setStyle("-fx-font-size: 16px;");
-            scheduleGrid.add(dayLabel, j, 0);
-            GridPane.setHalignment(dayLabel, HPos.CENTER);
+            scheduleGrid.add(dayLabel, j, 0); // column j, row 0
+            GridPane.setHalignment(dayLabel, HPos.CENTER); // center it over the schedule cells
         }
 
+        // load the schedule
         fetchAndDisplaySchedule();
     }
 
     public synchronized void fetchAndDisplaySchedule() {
+        // perform background update on a background thread
         new Thread(() -> updateScheduleGrid(scheduleArray)).start();
     }
 
     private synchronized void updateScheduleGrid(Lecture[][] schedule) {
+        // clear the grid
         Platform.runLater(() -> populateEmptySchedule());
 
+        // iterate through schedule array and add lectures to the grid
         for (Lecture[] lecList : schedule) {
             for (Lecture lec : lecList) {
                 if (lec != null) {
@@ -136,7 +145,7 @@ public class ServerDisplayScheduleController {
                     int col = days.indexOf(day) + 1;
 
                     Platform.runLater(() -> {
-                        // Add lecture to correct place in grid pane
+                        // add lecture to correct place in grid pane
                         if (row != 0 && col != 0) {
                             Label moduleLabel = new Label(module + "\n" + room);
                             scheduleGrid.add(moduleLabel, col, row);
@@ -151,32 +160,32 @@ public class ServerDisplayScheduleController {
     }
 
     private synchronized void populateEmptySchedule() {
-        // Remove all the lecture slot labels, but keep the day names and times
+        // remove all the lecture slot labels, but keep the day names and times
         scheduleGrid.getChildren().removeIf(node -> {
             Integer colIndex = GridPane.getColumnIndex(node);
             Integer rowIndex = GridPane.getRowIndex(node);
 
-            // Remove only the cells that are not part of the header (days/times)
+            // remove only the cells that are not part of the header (days/times)
             return colIndex != null && rowIndex != null && colIndex > 0 && rowIndex > 0;
         });
 
         for (int row = 1; row <= timeSlots.length; row++) {
             for (int col = 1; col <= 5; col++) {
                 Label emptyCell = new Label("");
-                emptyCell.setMinSize(150, 40); // Size logic for consistency
+                emptyCell.setMinSize(150, 40); // size logic for consistency
                 emptyCell.setStyle("-fx-border-color: black; -fx-background-color: white;");
                 scheduleGrid.add(emptyCell, col, row);
             }
         }
     }
 
-    // Handle the BACK action (goes back to monitor)
+    // handle the back action (goes back to monitor)
     @FXML
     private void handleBackAction() {
         BaseController.switchScene((Stage) backButton.getScene().getWindow(), "server_monitor.fxml", null);
     }
 
-    // Handle the clear action (clear the schedule)
+    // handle the clear action (clear the schedule)
     @FXML
     private void handleClear() {
         schedule.clearSchedule();
@@ -187,7 +196,7 @@ public class ServerDisplayScheduleController {
         ServerMonitor.log(String.format("Server cleared the %s schedule.", courseCode));
     }
 
-    // Handle importing schedule from CSV
+    // handle importing schedule from CSV
     @FXML
     private void handleImport() {
         // create file chooser to select csv file to import from
@@ -251,8 +260,6 @@ public class ServerDisplayScheduleController {
                 ServerMonitor.log(String.format("Server imported a schedule for %s.", courseCode));
                 fetchAndDisplaySchedule();
             });
-            
-
         } catch (IOException e) {
             ClientHandler.showAlert("File Read Error", "Error reading the CSV file.");
         }
@@ -276,18 +283,23 @@ public class ServerDisplayScheduleController {
         return formattedData.toString();
     }
 
-    // Handle exporting schedule to CSV
+    // handle exporting schedule to CSV
     @FXML
     private void handleExportCSV() {
+        // create a FileChooser to choose file name and save location
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save CSV File");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+
+        // show save dialog
         File file = fileChooser.showSaveDialog(new Stage());
 
+        //if valid file is chosen:
         if (file != null) {
             Task<String> task = new Task<>() {
                 @Override
                 protected String call() {
+                    // returns schedule data in a string
                     return schedule.displaySchedule();
                 }
             };
@@ -301,6 +313,7 @@ public class ServerDisplayScheduleController {
                 }
 
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                    // format data from server and write to csv
                     String formattedResponse = response.replace(";", "\n");
                     writer.write(formattedResponse);
 
@@ -315,24 +328,35 @@ public class ServerDisplayScheduleController {
                 }
             });
 
+            // start on background thread
             new Thread(task).start();
         }
     }
 
-    // Handle exporting schedule to PDF
+    // handle exporting schedule to PDF
     @FXML
     private void handleExportPDF() {
+        // create printerJob object
         PrinterJob job = PrinterJob.createPrinterJob();
         if (job == null) {
             System.out.println("No printer job available");
             return;
         }
 
-        job.getJobSettings().setPageLayout(job.getPrinter().createPageLayout(Paper.A4, PageOrientation.LANDSCAPE, Printer.MarginType.HARDWARE_MINIMUM));
+        // set page to landscape, small margins
+        job.getJobSettings().setPageLayout(
+            job.getPrinter().createPageLayout(
+                Paper.A4, PageOrientation.LANDSCAPE, Printer.MarginType.HARDWARE_MINIMUM
+            )
+        );
+
+        // show printer dialog
         boolean proceed = job.showPrintDialog(scheduleGrid.getScene().getWindow());
 
         if (proceed) {
+            //capture the grid pane
             boolean success = printNodeToPDF(scheduleGrid, job);
+
             if (success) {
                 job.endJob();
                 System.out.println("Server: Schedule exported to PDF successfully.");
@@ -368,5 +392,3 @@ public class ServerDisplayScheduleController {
         return success;
     }
 }
-
-

@@ -184,10 +184,7 @@ public class DisplayScheduleController {
     @FXML
     private void handleClear(){
         String message = "CLEAR";
-
-        client.readResponse(message, () -> {
-            fetchAndDisplaySchedule();
-        });
+        client.readResponse(message, null);
     }
 
     @FXML
@@ -247,8 +244,8 @@ public class DisplayScheduleController {
 
             //send info to server
             String message = "IMPORT," + formattedData;
-            client.readResponse(message, this::fetchAndDisplaySchedule);
-
+            //client.readResponse(message, this::fetchAndDisplaySchedule);
+            client.readResponse(message, null);
         } catch (IOException e) {
             Client.showAlert("File Read Error", "Error reading the CSV file.");
         }

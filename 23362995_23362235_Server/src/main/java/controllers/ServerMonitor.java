@@ -1,8 +1,10 @@
-package com.project.server;
+package controllers;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import com.project.server.ClientHandler;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -12,7 +14,8 @@ import javafx.application.Platform;
 
 public class ServerMonitor {
     private static ServerMonitor instance;
-    public boolean viewMonitor = true;;
+    public boolean viewMonitor = true;
+    // lists of all connected clients and server log messages
     private static final List<String> connectedClients = Collections.synchronizedList(new ArrayList<>());
     private static final List<String> logMessages = Collections.synchronizedList(new ArrayList<>());
 
@@ -25,6 +28,7 @@ public class ServerMonitor {
     @FXML
     private Button refreshButton;
 
+    // to allow for refresh
     public ServerMonitor() {
         instance = this;
     }
@@ -32,6 +36,7 @@ public class ServerMonitor {
         return instance;
     }
 
+    // to check if server is running monitor page or display page
     public static boolean viewingMonitor() {
         return instance.viewMonitor;
     }
@@ -43,6 +48,7 @@ public class ServerMonitor {
         return (Stage) instance.logMessagesArea.getScene().getWindow();
     }
 
+    //display all the clients and log messages
     public void initialize() {
         updateMonitor();
     }
@@ -61,6 +67,7 @@ public class ServerMonitor {
         connectedClients.remove(clientInfo);
         log("Client disconnected: " + clientInfo);
 
+        // refresh client list to show only remaining clients
         Platform.runLater(() -> {
             StringBuilder clientsText = new StringBuilder();
             for (String client : connectedClients) {
@@ -70,16 +77,14 @@ public class ServerMonitor {
         });
     }
 
+    // create a copy
     public static List<String> getConnectedClients() {
         return new ArrayList<>(connectedClients);
     }
 
+    // log the messages in the log area
     public static void log(String message) {
         String timestamp = "[" + java.time.LocalTime.now().withNano(0) + "] ";
-
-        if (logMessages.size() > 0 && (timestamp + message + "\n").equals(logMessages.get(logMessages.size() - 1))) {
-            return; // skip repeated log messages
-        }
 
         Platform.runLater(() -> {
             // update the log messages area in the JavaFX application thread
@@ -88,11 +93,12 @@ public class ServerMonitor {
         logMessages.add(timestamp + message);
     }
 
+    // create a copy
     public static List<String> getLogs() {
         return new ArrayList<>(logMessages);
     }
 
-    
+    // stop the server and close application
     @FXML
     private void handleStopAction() {
         System.out.println("Stopping the server...");
@@ -105,8 +111,9 @@ public class ServerMonitor {
     }
     
 
-    // Update the connected clients and log messages
+    // refresh the connected clients and log messages
     public void updateMonitor() {
+        // update clients
         StringBuilder clientsText = new StringBuilder();
         for (String client : connectedClients) {
             clientsText.append(client).append("\n");
@@ -114,7 +121,7 @@ public class ServerMonitor {
         connectedClientsArea.setText(clientsText.toString());
         connectedClientsArea.appendText("");
     
-        // Update log messages area
+        // update log messages
         StringBuilder logsText = new StringBuilder();
         for (String log : logMessages) {
             logsText.append(log).append("\n");
@@ -125,6 +132,8 @@ public class ServerMonitor {
         System.out.println("Updated monitor - Clients: " + connectedClients.size() + ", Logs: " + logMessages.size());
     }
     
+
+    // refresh the GUI
     @FXML
     private void handleRefreshAction(){
         updateMonitor();

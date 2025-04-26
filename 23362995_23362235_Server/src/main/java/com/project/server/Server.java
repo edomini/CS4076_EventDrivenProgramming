@@ -8,13 +8,14 @@ import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
-    private static ServerSocket serverSocket;
-    private static ServerSocket updateSocket;
+    private static ServerSocket serverSocket; // server socket for client to connect
+    private static ServerSocket updateSocket; // socket to send update prompts
     protected static int clientsConnected;
     protected static int offset;
-
+    //use concurrent hash map as database to ensure thread safety
     public static ConcurrentHashMap<String, Schedule> database = new ConcurrentHashMap<>();
 
+    // connect to ports and run server
     public static void startServer(int port) {
         System.out.println("Opening port...\n");
 
@@ -30,11 +31,13 @@ public class Server {
 
         while (true) {
             try {
+                // accept client connections
                 Socket link = serverSocket.accept();
                 Socket updateLink = updateSocket.accept();
                 clientsConnected++;
                 System.out.println("\nNew client connected. Total clients: " + clientsConnected);
 
+                // read course code from client
                 BufferedReader tempIn = new BufferedReader(new InputStreamReader(link.getInputStream()));
                 String message = tempIn.readLine().trim();
 
@@ -49,6 +52,7 @@ public class Server {
                     return new Schedule();
                 });
 
+                // create a new thread for each client
                 new Thread(new ClientHandler(link, updateLink, schedule, clientsConnected + offset, course)).start();
             } catch (IOException ex) {
                 System.out.println("Failed to connect to client.");

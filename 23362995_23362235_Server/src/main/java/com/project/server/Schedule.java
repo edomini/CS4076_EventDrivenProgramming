@@ -6,6 +6,7 @@ import javafx.application.Platform;
 
 import controllers.BaseController;
 import controllers.ServerDisplayScheduleController;
+import controllers.ServerMonitor;
 
 public class Schedule {
     private final Lecture[][] schedule; //schedule array for display
@@ -25,6 +26,7 @@ public class Schedule {
         }
     }
 
+    // return schedule object as 2D array
     public Lecture[][] getSchedule() {
         return schedule;
     }
@@ -61,7 +63,6 @@ public class Schedule {
                     //if not free, send error message
                     throw new IncorrectActionException("Time slot taken. Cannot add this lecture to the schedule.");
                 }
-
             } else {
                 throw new IncorrectActionException("Max 5 modules per course, cannot add another module.");
             }
@@ -152,24 +153,26 @@ public class Schedule {
             }
         }
         
+        // update server and client GUIs
         broadcast("UPDATE");
         return "Success: Schedule imported successfully.";
     }
 
+    // open the client's schedule in the server GUI
     public synchronized String displayServerSchedule(String courseCode) {
-        //CALL DISPLAY METHOD IN SCHEDULE DISPLAY CONTROLLER
         Schedule s = Server.database.get(courseCode);
         
         Platform.runLater(() -> {
             if(ServerMonitor.viewingMonitor()){
+                // if server is not displaying schedule, switch to server display page
                 ServerMonitor.setViewingMonitor(false);
                 BaseController.switchScene(ServerMonitor.getStage(), "server_display_schedule.fxml", s);
             } else {
+                // otherwise, update page
                 ServerDisplayScheduleController controller = ServerDisplayScheduleController.getInstance();
-                controller.setSchedule(s);
+                controller.setSchedule(s);            
             }
         });
-
         return String.format("Success: %s schedule displaying on server.", courseCode);
     }
 
@@ -183,6 +186,7 @@ public class Schedule {
             Arrays.fill(row, null); //reset to null
         }
 
+        // update server and client GUIs
         broadcast("UPDATE");
 
         //set message for client
@@ -212,7 +216,7 @@ public class Schedule {
         }
 
         ServerDisplayScheduleController controller = ServerDisplayScheduleController.getInstance();
-        if (controller != null) {
+        if (controller != null && ServerMonitor.viewingMonitor() == false) {
             // refresh the GUI
             controller.fetchAndDisplaySchedule();
         }

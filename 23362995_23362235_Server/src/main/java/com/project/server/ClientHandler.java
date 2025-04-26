@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import controllers.ServerDisplayScheduleController;
+import controllers.ServerMonitor;
 import javafx.scene.control.Alert;
 
 public class ClientHandler implements Runnable {
@@ -60,10 +61,7 @@ public class ClientHandler implements Runnable {
                 Server.offset++;
             }
             schedule.removeClient(this);
-
-
-            ServerMonitor.removeClient(this.toString()); // Track disconnection
-
+            ServerMonitor.removeClient(this.toString()); // track disconnection on server monitor
         } catch (IOException ex) {
             System.out.println("Connection error: " + ex.getMessage());
         }
@@ -128,13 +126,11 @@ public class ClientHandler implements Runnable {
     // send update message to both client and server GUIs
     public void broadcast(String message) {
         for (ClientHandler client : schedule.getClients()) {
-            if (client != this) { // don't send to self
-                client.updateOut.println(message);
-            }
+            client.updateOut.println(message);
         }
 
         ServerDisplayScheduleController controller = ServerDisplayScheduleController.getInstance();
-        if (controller != null) {
+        if (controller != null && ServerMonitor.viewingMonitor() == false) {
             // refresh the GUI
             controller.fetchAndDisplaySchedule();
         }

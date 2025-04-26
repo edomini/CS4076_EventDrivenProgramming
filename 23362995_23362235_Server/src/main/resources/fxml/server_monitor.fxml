@@ -4,10 +4,10 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.project.server.ServerMonitor">
+            fx:controller="controllers.ServerMonitor">
 
     <top>
-        <!-- Top bar for Back and Refresh -->
+        <!-- Top bar for Stop and Refresh -->
         <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 10;">
             <Button fx:id="stopButton" text="Stop" onAction="#handleStopAction"
                     style="-fx-background-color: #D3D3D3; -fx-font-size: 14px; -fx-padding: 8 16;"/>

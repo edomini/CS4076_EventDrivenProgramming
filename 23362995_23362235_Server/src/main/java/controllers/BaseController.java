@@ -17,6 +17,7 @@ public class BaseController {
 
             if (fxmlFile.equals("server_display_schedule.fxml")) {
                 ServerDisplayScheduleController serverDisplayScheduleController = loader.getController();
+                // set schedule before initialisation
                 serverDisplayScheduleController.setSchedule(schedule);
             }
 

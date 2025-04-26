@@ -26,8 +26,8 @@ public class Main extends Application {
             stage.setScene(scene);
             stage.show();
             
+            // start server on background thread to avoid blocking UI thread
             new Thread(() -> Server.startServer(1234)).start();
-
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

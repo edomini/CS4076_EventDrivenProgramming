@@ -59,7 +59,6 @@ public class EarlyLectures extends RecursiveTask<Boolean> {
 
             changed = leftResult || rightResult; // combine results
         }
-
         return changed;
     }
 
@@ -68,7 +67,7 @@ public class EarlyLectures extends RecursiveTask<Boolean> {
         try {
             return fivePool.invoke(new EarlyLectures(array, 0, array[0].length));
         } finally {
-            fivePool.shutdown(); // ensure the pool is properly closed
+            fivePool.shutdown(); // ensure the pool is closed after
         }
     }
 }
