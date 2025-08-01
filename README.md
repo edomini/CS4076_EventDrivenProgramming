@@ -1,9 +1,9 @@
-## Event-Driven Programming 
+# Event-Driven Programming 
 
-# PART 1
-# Introduction and High-level Requirements
-Develop a TCP protocol‐based Client-server service that consists of two applications where the 
-client application will be a GUI application whereas the server is a console application. You will 
+## PART 1
+### Introduction and High-level Requirements
+Develop a TCP protocol‐based client-server service that consists of two applications, where the 
+client application will be a GUI application and the server is a console application. You will 
 develop this application using the Model-View-Controller (MVC) style.
 The main communication protocol for this service is that the client and the server must
 alternate between sending and receiving messages.
@@ -16,10 +16,10 @@ communication by sending back a message with the TERMINATE keyword response and
 closing its connection to the client.
 - On the client side, all this communication should be performed using appropriate GUI controls 
 (e.g., text fields and buttons) and event-handling mechanisms.
-- A message sent by the Client application to the server consists of action and event description 
+- A message sent by the client application to the server consists of action and event description 
 information read from the GUI controls. The server application acts and responds to the client 
 with a message.
-- Your applications MUST USE the Exceptions Handling. You must define a new exception called 
+- Your applications MUST USE Exception Handling. You must define a new exception called 
 IncorrectActionException that produces a message error that will be sent by the server. This 
 exception will be thrown if the user provides an incorrect action format. Your application must 
 then react to this exception.
@@ -31,7 +31,7 @@ For a connection to be established with a client, the server application must:
 
 Project Description: Lecture Scheduler Application
 Following is the detail of the client and server applications:
-Client App: The client sends to the server app information regarding a lecture to schedule and 
+Client App: The client sends information to the server app regarding a lecture to schedule and 
 displays on the proper GUI control the response messages received from the server. Before 
 sending a message, the client selects an action to be requested from the server using an 
 appropriate GUI control. The client may request to perform the following operations (1). Add a 
@@ -71,9 +71,7 @@ LM051-2026). Assume there will be no more than 5 modules a course can study in a
 semester; the server don’t need to display the schedule rather it will send the schedule 
 information to client (what format server will send to client and how client will parse that 
 information?). The client will receive that information and then will display the full course 
-schedule using a proper GUI control (Hint: You may consider the design of your own
-course’s GUI on web portals: https://www.timetable.ul.ie/). The schedule display will be for 
-per week (as it is for your course).
+schedule using a proper GUI control. The schedule display will be for per week (as it is for your course).
 4. Other: Using GUI control, the client will ask a request that server is not providing service for. 
 The server will throw an IncorrectActionException on server side on receiving such an 
 information and will send a proper message to client, letting him know that client ask a 
@@ -84,11 +82,11 @@ for maximum 5 modules, only for one course where display is only for 1 week, and
 side. You are free to assume the other information about the application that you think is still missing.
 
 REMEMBER!
-• A new exception called IncorrectActionException must be defined and caught
+- A new exception called IncorrectActionException must be defined and caught
 by the server application.
-• Client and Server exchange messages until the client presses STOP and the
+- Client and Server exchange messages until the client presses STOP and the
 connection will be terminated.
-• Test the application for all scenarios and the assessment criteria provided below.
+- Test the application for all scenarios and the assessment criteria provided below.
 
 
 # PART 2
@@ -99,7 +97,7 @@ Multithreading concept. To implement this, the server application must start a n
 each connection established with a client. Each thread on the server side will then:
 1. Receive the requests/messages sent by the client application.
 2. Call the appropriate method to perform the action indicated in the message.
-3. Replie to the client with a piece of information according to the action performed.
+3. Reply to the client with a piece of information according to the action performed.
 Your applications must ensure synchronization and control access to the memory‐based data
 collection (e.g., ArrayList, HashMap object) managed on the server side. This time your server will 
 also be a GUI application.
@@ -114,18 +112,18 @@ You are expected to implement this functionality using a divide-and-conquer algo
 different thread is shifting the classes to early mornings for each day (i.e., different threads 
 created todeal with separate days in a week).
 
-Server must decouple the JavaFX part from ‘early lectures’ feature using Task and Worker
+Server must decouple the JavaFX part from ‘early lectures’ feature using the Task and Worker
 phenomenon of javafx.cuncurrent package. This decoupling should allow the server to 
 handle the requests from other clients to perform Addition, Removal, and Display tasks for 
 other classes (e.g.,LM110-2022).
 
 REMEMBER!
-• Each Client‐Server communication is managed by a thread.
-• The Server application deals with a shared resource, the memory‐based
+- Each Client‐Server communication is managed by a thread.
+- The Server application deals with a shared resource, the memory‐based
 data collection (e.g., ArrayList, HashMap object). You must implement a
 mechanism that ensures threads synchronization.
-• The task of ‘early lectures’ must be decoupled and performant.
-• Test the application by launching in NetBeans multiple executions of the
+- The task of ‘early lectures’ must be decoupled and performant.
+- Test the application by launching in NetBeans multiple executions of the
 
-Client application to simulate multiple clients that exchange messages
+The client application should simulate multiple clients that exchange messages
 with the same server concurrently.
