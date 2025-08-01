@@ -89,8 +89,8 @@ connection will be terminated.
 - Test the application for all scenarios and the assessment criteria provided below.
 
 
-# PART 2
-# Description
+## PART 2
+### Description
 Suppose that multiple clients can now schedule the timetable at the same time. Provide all 
 the functionalities in Part 1 by adding the multi-processor architecture support using the 
 Multithreading concept. To implement this, the server application must start a new Thread for 
