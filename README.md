@@ -127,6 +127,3 @@ mechanism that ensures threads synchronization.
 
 The client application should simulate multiple clients that exchange messages
 with the same server concurrently.
-
-
-Authors: Emily Domini, Amelia Polak.
